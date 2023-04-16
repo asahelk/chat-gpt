@@ -1,0 +1,80 @@
+[
+    {
+      "id":"bcf4b82b-d6fd-46e9-b1d7-026a7b7190cd",
+      "parent":1,
+       "droppable": false,
+       "messages":null,
+       "chattext":"(Example) Marketing Advice",
+       "model":"gpt-3.5-turbo",
+       "systemMessage":"You are a marketing expert, you help the user develop marketing strategies and campaigns, conduct market research, and provide branding and advertising advice.",
+       "character":{
+          "id":"marketing_expert",
+          "text":"Marketing Expert",
+          "instruction":"You are a marketing expert, you help the user develop marketing strategies and campaigns, conduct market research, and provide branding and advertising advice.",
+          "description":"A marketing expert who can help you develop effective marketing strategies and campaigns, conduct market research, and provide branding and advertising advice.",
+          "color":"#F5F5F5"
+       },
+       "chatID":"bcf4b82b-d6fd-46e9-b1d7-026a7b7190cd",
+       "updatedAt":"2023-03-11T02:58:19.665Z",
+       "preview":"The best advice I could give for marketing is to k",
+       "text":"(Example) Marketing Advice",
+       "favoritedAt":"2023-04-13T14:00:38.631Z",
+       "isFavorite":true,
+       "chatType": "CHAT"
+    },
+    {
+       "id":"cb9cd659-131a-4451-bda2-04f748c8fda2",
+       "parent":"fo-14af1b72-aacc-41bd-ad00-27dafe8f5f58",
+       "droppable": false,
+       "messages":null,
+       "chattext":"(Example) Chat with comedian",
+       "model":"gpt-3.5-turbo",
+       "systemMessage":"You are a standup comedian, you make people laugh with your satire, jokes and humor. You answer everything in a humorous way to cheer the user up. Use satire and make fun of everything the user says in a positive way.",
+       "character":{
+          "id":"standup_comedian",
+          "text":"Standup Comedian",
+          "instruction":"You are a standup comedian, you make people laugh with your satire, jokes and humor. You answer everything in a humorous way to cheer the user up. Use satire and make fun of everything the user says in a positive way.",
+          "description":"A standup comedian who can make you laugh with their jokes and humor.",
+          "color":"#F0FFF0"
+       },
+       "chatID":"cb9cd659-131a-4451-bda2-04f748c8fda2",
+       "updatedAt":"2023-03-11T02:57:36.557Z",
+       "preview":"Hey there, Mr. Yo! Is that some sort of new yoghur",
+       "text":"(Example) Chat with comedian",
+       "isFavorite":false,
+       "chatType": "CHAT"
+    },
+    {
+      "id":"dbaa830d-8658-4fcd-aa10-17e3f83fc231",
+      "parent":0,
+      "droppable": false,
+      "messages":null,
+      "chattext":"(Example) Generating domain texts",
+      "model":"gpt-3.5-turbo",
+      "systemMessage":"You are ChatGPT, a large language model trained by OpenAI.",
+      "character":null,
+      "chatID":"dbaa830d-8658-4fcd-aa10-17e3f83fc231",
+      "updatedAt":"2023-03-11T02:57:24.561Z",
+      "preview":"1. TaskGrid.com\n2. TodoHive.com\n3. TaskSpot.com\n4.",
+      "text":"(Example) Generating domain texts",
+      "isFavorite":true,
+      "chatType": "CHAT"
+    },
+    {
+      "id":"48e25eea-5655-4184-8ef7-1f0f29f2b612",
+      "parent":0,
+      "droppable": false,
+      "messages":null,
+      "chattext":"Markoting",
+      "model":"gpt-3.5-turbo",
+      "systemMessage":"You are ChatGPT, a large language model trained by OpenAI.",
+      "character":null,
+      "chatID":"48e25eea-5655-4184-8ef7-1f0f29f2b612",
+      "updatedAt":"2023-03-11T02:57:23.913Z",
+      "preview":"I love AI very much.",
+      "text":"Markoting",
+      "syncedAt":null,
+      "favoritedAt":"2023-04-13T14:01:22.027Z",
+      "chatType": "CHAT"
+    }
+ ]

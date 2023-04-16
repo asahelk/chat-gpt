@@ -22,8 +22,7 @@ export function ConversationList({ isFavoriteList }) {
         id={item.id}
         title={item.name}
         isFavorite={item.isFavorite}
-        draggable={!isFavoriteList}
-        isfavoritelist={isFavoriteList?.toString()}
+        isFavoriteList
       />
     )
   })

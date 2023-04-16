@@ -1,0 +1,41 @@
+[
+    {
+       "id":"fo-14af1b72-aacc-41bd-ad00-27dafe8f5f58",
+       "parent":0,
+       "text":"Aqui",
+       "droppable": true,
+       "new":false,
+       "open":false,
+       "createdAt":"2023-04-08T16:33:05.623Z",
+       "updatedAt":"2023-04-10T08:02:19.546Z",
+       "syncedAt":null,
+       "order":0,
+       "chatType": "FOLDER"
+    },
+    {
+       "id":"fo-10010646-5e58-497a-b37d-38e7c1b513cd",
+       "parent":0,
+       "text":"New Folder",
+       "droppable": true,
+       "new":false,
+       "open":false,
+       "createdAt":"2023-04-08T16:33:04.027Z",
+       "updatedAt":"2023-04-10T08:02:19.548Z",
+       "syncedAt":null,
+       "order":1,
+       "chatType": "FOLDER"
+    },
+    {
+       "id":"fo-7ed827c9-da8a-44d9-a7b8-d76513c4ae83",
+       "parent":0,
+       "text":"New Folder",
+       "droppable": true,
+       "new":false,
+       "open":true,
+       "createdAt":"2023-04-10T06:28:41.901Z",
+       "updatedAt":"2023-04-10T09:56:47.030Z",
+       "syncedAt":null,
+       "order":2,
+       "chatType": "FOLDER"
+    }
+ ]

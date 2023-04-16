@@ -1,10 +1,10 @@
 import { useChatComponent } from '@/app/hooks/useChatComponent'
 import { useStore } from '@/store/boundStore'
-import { useState } from 'react'
-import { ConversationList } from './ConversationList'
 import { ArrowDownIcon, ArrowRightIcon } from './Icons'
 
-export function Folder({ id, title, ...inputProps }) {
+export function Folder({ id, title, isOpen, ...inputProps }) {
+  const { onToggle } = inputProps
+
   const removeFolder = useStore((state) => state.removeFolder)
 
   const updateFolder = useStore((state) => state.updateFolder)
@@ -16,23 +16,12 @@ export function Folder({ id, title, ...inputProps }) {
     removeCallback: removeFolder
   })
 
-  const [showFolderDetails, setShowFolderDetails] = useState(false)
-
-  const handleShowFolderDetails = (event) => {
-    event?.preventDefault()
-    setShowFolderDetails(!showFolderDetails)
-  }
-
-  const renderArrowIcon = showFolderDetails ? (
-    <ArrowDownIcon />
-  ) : (
-    <ArrowRightIcon />
-  )
+  const renderArrowIcon = isOpen ? <ArrowDownIcon /> : <ArrowRightIcon />
   return (
     <div>
       <div
         {...inputProps}
-        className='focus-within:bg-[#18191a] focus-within:text-white text-gray-300 hover:bg-[#2A2B32] hover:text-white group flex items-center text-sm font-medium w-full space-x-2 justify-between overflow-hidden'
+        className='focus-within:bg-[#18191a] focus-within:text-white text-gray-300 hover:bg-[#2A2B32] hover:text-white group flex items-center text-sm font-medium w-full space-x-2 justify-between overflow-hidden px-3'
         role='button'
         tabIndex='0'
         aria-disabled='false'
@@ -40,8 +29,8 @@ export function Folder({ id, title, ...inputProps }) {
         aria-describedby='DndDescribedBy-1'
       >
         <button
-          onClick={handleShowFolderDetails}
-          className='flex items-center justify-start space-x-2 min-w-0 w-full px-2 py-2 text-sm'
+          onClick={onToggle}
+          className='flex items-center justify-start space-x-2 min-w-0 w-full py-2 text-sm'
         >
           {renderArrowIcon}
           <div className='space-y-1 text-left w-full min-w-0'>
@@ -55,7 +44,7 @@ export function Folder({ id, title, ...inputProps }) {
         {RenderInputActions()}
       </div>
       <div className='pl-6 space-y-2 relative hidden !block'>
-        {showFolderDetails && <ConversationList />}
+        {/* {showFolderDetails && <ConversationList />} */}
       </div>
     </div>
   )

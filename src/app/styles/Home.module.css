@@ -276,3 +276,30 @@
     transform: rotate(0deg);
   }
 }
+
+.treeRoot {
+  list-style-type: none;
+  padding-inline-start: 0px;
+  position: relative;
+  height:100%;
+}
+
+.treeRoot ul {
+  list-style-type: none;
+  padding-inline-start: 0px;
+  position: relative;
+  padding-bottom: 5px;
+}
+
+.treeRoot > li:after {
+  display: none;
+}
+
+.wrapper .placeholder {
+  position: relative;
+}
+
+.wrapper li:has(> .dropTarget) {
+  outline: 3px solid #e8f0fe;
+  border-radius: 4px;
+}

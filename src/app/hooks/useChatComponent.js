@@ -104,7 +104,7 @@ export function useChatComponent({
   const RenderInputActions = () => {
     return (
       <>
-        <div className='pr-2'>
+        <div className=''>
           <div className='flex items-center justify-center space-x-2'>
             <button
               onClick={onHandleEditCheckButton}
