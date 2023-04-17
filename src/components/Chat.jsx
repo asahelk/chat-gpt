@@ -27,7 +27,7 @@ export function Chat() {
   }
 
   return (
-    <div className='flex flex-col flex-1 h-full lg:pl-64'>
+    <div className='flex flex-col flex-1 h-full lg:pl-80'>
       <main className='relative w-full' ref={animationParent}>
         {renderContent()}
         <ChatForm />

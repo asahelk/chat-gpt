@@ -96,7 +96,7 @@ export function useChatComponent({
     return (
       <div className='relative flex-1 overflow-hidden break-all text-ellipsis max-h-5 w-full'>
         {chatTitle}
-        <div className='absolute inset-y-0 right-0 w-8 z-10 bg-gradient-to-l group-focus-within:from-[#18191a] from-gptdarkgray group-hover:from-[#2A2B32]' />
+        <div className='absolute inset-y-0 right-0 w-8 z-10 bg-gradient-to-l group-focus-within:from-gptCharcoalGray group-hover:from-gptMidnightBlue' />
       </div>
     )
   }

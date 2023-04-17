@@ -21,7 +21,7 @@ export function Folder({ id, title, isOpen, ...inputProps }) {
     <div>
       <div
         {...inputProps}
-        className='focus-within:bg-[#18191a] focus-within:text-white text-gray-300 hover:bg-[#2A2B32] hover:text-white group flex items-center text-sm font-medium w-full space-x-2 justify-between overflow-hidden px-3'
+        className='focus-within:bg-gptCharcoalGray focus-within:text-white text-gray-300 hover:bg-gptMidnightBlue hover:text-white group flex items-center text-sm font-medium w-full space-x-2 justify-between overflow-hidden px-3'
         role='button'
         tabIndex='0'
         aria-disabled='false'

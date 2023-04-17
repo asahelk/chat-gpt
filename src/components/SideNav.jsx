@@ -1,5 +1,4 @@
 import { useStore } from '@/store/boundStore'
-import { useAutoAnimate } from '@formkit/auto-animate/react'
 import { MultiBackend, getBackendOptions } from '@minoru/react-dnd-treeview'
 import { DndProvider } from 'react-dnd'
 import { ConversationList } from './ConversationList'
@@ -13,14 +12,14 @@ export function SideNav({ className }) {
 
   const clearConversations = useStore((state) => state.clearConversations)
 
-  const [animationParent] = useAutoAnimate()
+  // const [animationParent] = useAutoAnimate()
 
   const placeHolderName = 'New folder'
 
   return (
     <>
       <aside
-        className={`${className} lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col z-40 transition duration-300 h-full`}
+        className={`${className} lg:fixed lg:inset-y-0 lg:flex lg:w-80 lg:flex-col z-40 transition duration-300 h-full`}
       >
         {/* <nav className='flex-1 space-y-2 flex flex-col overflow-y-auto'> */}
         <div className='flex h-full min-h-0 flex-1 flex-col bg-gptdarkgray'>
@@ -50,17 +49,14 @@ export function SideNav({ className }) {
               </div>
               <div className='px-2'>
                 <div className='max-h-[200px] overflow-auto'>
-                  <div className='text-gray-300 hover:bg-[#2A2B32] hover:text-white group text-sm font-medium w-full justify-between overflow-hidden'>
+                  <div className='text-gray-300 hover:bg-gptMidnightBlue hover:text-white group text-sm font-medium w-full justify-between overflow-hidden'>
                     <ConversationList isFavoriteList />
                   </div>
                 </div>
                 <hr className='h-px my-2 bg-gptlightgray border-0 ' />
               </div>
               <div className='flex-col flex-1 overflow-y-auto mt-3'>
-                <div
-                  ref={animationParent}
-                  className='flex flex-col h-full gap-2 text-sm text-gray-100'
-                >
+                <div className='flex flex-col h-full gap-2 text-sm text-gray-100'>
                   <DndProvider
                     backend={MultiBackend}
                     options={getBackendOptions()}

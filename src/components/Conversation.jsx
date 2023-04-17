@@ -34,7 +34,7 @@ export function Conversation({
     <div
       {...inputProps}
       onClick={() => selectConversation({ id })}
-      className='focus-within:bg-[#18191a] relative flex items-center gap-3 px-3 py-3 break-all cursor-pointer group hover:bg-[#2A2B32]'
+      className='focus-within:bg-gptCharcoalGray relative flex items-center gap-3 px-3 py-3 break-all cursor-pointer group hover:bg-gptMidnightBlue'
     >
       <MessageFavIcon
         className={`text-gray-300 h-5 w-5 flex-shrink-0 hidden sm:block ${

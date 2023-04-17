@@ -29,7 +29,7 @@ export default function RootLayout({ children }) {
 
           <div
             className={`${
-              isShowNavOpen ? 'lg:pl-64' : ''
+              isShowNavOpen ? 'lg:pl-80' : ''
             } flex flex-col flex-1 h-full`}
           >
             <main className='relative w-full'>

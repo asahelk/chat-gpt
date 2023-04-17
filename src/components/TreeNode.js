@@ -1,8 +1,6 @@
+import { CHAT_TYPES, TREE_X_OFFSET } from '@/constants'
 import { Conversation } from './Conversation'
 import { Folder } from './Folder'
-
-const CHAT_TYPES = { CHAT: 'CHAT', FOLDER: 'FOLDER' }
-const TREE_X_OFFSET = 24
 
 export function TreeNode({ node, depth, isOpen, onToggle, onDelete, onCopy }) {
   const { id, droppable, data } = node
