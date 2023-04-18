@@ -97,7 +97,7 @@ export function useChatComponent({
       <div className='relative flex-1 overflow-hidden break-all text-ellipsis max-h-5 w-full'>
         {chatTitle}
         <div
-          className={`${className} absolute inset-y-0 right-0 w-8 z-10 bg-gradient-to-l group-focus-within:from-gptCharcoalGray from-gptdarkgray group-hover:from-gpt-midnight-blue`}
+          className={`${className} absolute inset-y-0 right-0 w-8 z-10 bg-gradient-to-l group-focus-within:from-gptCharcoalGray from-gptdarkgray group-hover:from-gptMidnightBlue`}
           data-gradient='true'
         />
       </div>

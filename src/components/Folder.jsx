@@ -3,7 +3,7 @@ import { useStore } from '@/store/boundStore'
 import { ArrowDownIcon, ArrowRightIcon } from './Icons'
 
 export function Folder({ id, title, isOpen, ...inputProps }) {
-  const { onToggle, background = '', backgroundGradient = '' } = inputProps
+  const { onToggle, background = '', bggradient = '' } = inputProps
   const removeFolder = useStore((state) => state.removeFolder)
 
   const updateFolder = useStore((state) => state.updateFolder)
@@ -11,7 +11,7 @@ export function Folder({ id, title, isOpen, ...inputProps }) {
   const { ElementTitle, RenderInputActions } = useChatComponent({
     id,
     title,
-    className: backgroundGradient,
+    className: bggradient,
     callbackOnSubmit: updateFolder,
     removeCallback: removeFolder
   })
@@ -22,7 +22,7 @@ export function Folder({ id, title, isOpen, ...inputProps }) {
     <div>
       <div
         {...inputProps}
-        className={`${background} focus-within:bg-gptCharcoalGray focus-within:text-white text-gray-300 hover:bg-gpt-midnight-blue hover:text-white group flex items-center text-sm font-medium w-full space-x-2 justify-between overflow-hidden pl-2 pr-3`}
+        className={`${background} focus-within:bg-gptCharcoalGray focus-within:text-white text-gray-300 hover:bg-gptMidnightBlue hover:text-white group flex items-center text-sm font-medium w-full space-x-2 justify-between overflow-hidden pl-2 pr-3`}
         role='button'
         tabIndex='0'
         aria-disabled='false'

@@ -49,7 +49,7 @@ export function SideNav({ className }) {
               </div>
               <div className='px-2'>
                 <div className='max-h-[200px] overflow-auto'>
-                  <div className='text-gray-300 hover:bg-gpt-midnight-blue hover:text-white group text-sm font-medium w-full justify-between overflow-hidden'>
+                  <div className='text-gray-300 hover:bg-gptMidnightBlue hover:text-white group text-sm font-medium w-full justify-between overflow-hidden'>
                     <ConversationList isFavoriteList />
                   </div>
                 </div>
