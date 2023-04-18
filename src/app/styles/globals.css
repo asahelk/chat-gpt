@@ -138,3 +138,9 @@ code {
 .hljs code {
   font-weight: 500;
 }
+
+ li ul{
+  margin-left: 17.5px;
+  border-left: 1px solid #ffffff33;
+}
+

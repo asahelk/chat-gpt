@@ -10,6 +10,8 @@ export function Conversation({
   isFavoriteList,
   ...inputProps
 }) {
+  const { background, backgroundGradient } = inputProps
+
   const [isFav, setIsFav] = useState(isFavorite)
   const removeConversation = useStore((state) => state.removeConversation)
 
@@ -18,8 +20,9 @@ export function Conversation({
   const { RenderInputActions, ElementTitle } = useChatComponent({
     id,
     title,
-    callbackOnSubmit: updateConversation,
+    className: backgroundGradient,
     isFav,
+    callbackOnSubmit: updateConversation,
     removeCallback: removeConversation
   })
 
@@ -34,7 +37,7 @@ export function Conversation({
     <div
       {...inputProps}
       onClick={() => selectConversation({ id })}
-      className='focus-within:bg-gptCharcoalGray relative flex items-center gap-3 px-3 py-3 break-all cursor-pointer group hover:bg-gptMidnightBlue'
+      className={`${background} focus-within:bg-gptCharcoalGray relative flex items-center gap-3 px-3 py-3 break-all cursor-pointer group hover:bg-gpt-midnight-blue`}
     >
       <MessageFavIcon
         className={`text-gray-300 h-5 w-5 flex-shrink-0 hidden sm:block ${

@@ -41,14 +41,14 @@
    "chatID":"cb9cd659-131a-4451-bda2-04f748c8fda2",
    "updatedAt":"2023-03-11T02:57:36.557Z",
    "preview":"Hey there, Mr. Yo! Is that some sort of new yoghur",
-   "text":"(Example) Chat with comedian",
+   "text":"(Example) ",
    "isFavorite":false,
    "chatType": "CHAT",
    "type": "CHAT"
    },
    {
    "id":"dbaa830d-8658-4fcd-aa10-17e3f83fc231",
-   "parent":"0",
+   "parent":"fo-14af1b72-aacc-41bd-ad00-27dafe8f5f58",
    "droppable": false,
    "messages":null,
    "chattext":"(Example) Generating domain texts",
@@ -58,7 +58,7 @@
    "chatID":"dbaa830d-8658-4fcd-aa10-17e3f83fc231",
    "updatedAt":"2023-03-11T02:57:24.561Z",
    "preview":"1. TaskGrid.com\n2. TodoHive.com\n3. TaskSpot.com\n4.",
-   "text":"(Example) Generating domain texts",
+   "text":"(Example) Generating domain texts xdddddddddddddddddddddddddddddddddd",
    "isFavorite":true,
    "chatType": "CHAT",
    "type": "CHAT"

@@ -21,29 +21,14 @@
   /* background:#202123; */
 }
 
-/* li:has(> .dropTarget) {
-  outline: 3px solid #e8f0fe;
-  border-radius: 4px;
-  background:blue;
-  opacity: 1;
-} */
 
 .dropTarget {
-  /* background-color: red !important;
-  outline: 2px solid #e8f0fe; */
-  /* border-radius: 4px; */
-}
-
-.dropTarget > * {
   @apply bg-gptSteelBlue;
 }
 
-
-/* .dropTarget > div{
-  background: blue !important;
-  outline: 2px solid #e8f0fe;
-  border-radius: 4px;
-} */
+.dropTarget div[data-gradient='true']{
+  @apply from-gptSteelBlue;
+}
 
 .draggingSource > div {
   opacity: .3;
@@ -51,6 +36,7 @@
 
 .listItem {
   /* background: #202123; */
+  position: relative;
 }
 
 .placeholderContainer {

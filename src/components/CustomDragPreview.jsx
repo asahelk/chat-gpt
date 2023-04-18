@@ -8,8 +8,8 @@ export function CustomDragPreview({ monitorProps: { item } }) {
   if (item.chatType === CHAT_TYPES.FOLDER) {
     return (
       <Folder
-        style={{ background: '#2A2B32' }}
-        // class='!bg-gptMidnightBlue ps-4'
+        background='bg-gpt-midnight-blue'
+        backgroundGradient='from-gpt-midnight-blue'
         id={id}
         title={text}
       />
@@ -17,7 +17,8 @@ export function CustomDragPreview({ monitorProps: { item } }) {
   }
   return (
     <Conversation
-      style={{ background: '#2A2B32' }}
+      background='bg-gpt-midnight-blue'
+      backgroundGradient='from-gpt-midnight-blue'
       id={id}
       title={text}
       isFavorite={isFavorite}
