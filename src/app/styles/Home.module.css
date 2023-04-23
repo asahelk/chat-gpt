@@ -24,6 +24,8 @@
 
 .dropTarget {
   @apply bg-gptSteelBlue;
+  /* outline-gray-300/50 outline-1 outline */
+  
 }
 
 .dropTarget div[data-gradient='true']{
@@ -44,11 +46,18 @@
 }
 
 .placeHolder{
-  @apply bg-gptlogo;
-  
+  /* @apply bg-blue-500; */
+  @apply shadow-inner shadow-gptlogo;
   height: 2px;
   position: absolute;
   right: 0;
   top: 0;
   transform: translateY(-50%);
+}
+
+
+.wrapper li:has(> .dropTarget) { /* Not working rn */
+  outline: 3px solid #e8f0fe;
+  background:red !important;
+  border-radius: 4px;
 }
