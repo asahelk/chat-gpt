@@ -21,7 +21,6 @@ export const TreeNode: React.FC<Props> = ({
   const { id, droppable, data } = node
   const indent = depth * TREE_X_OFFSET + 8
   const style = { paddingInlineStart: indent }
-  // console.log('options', options)
 
   if (node.data == null || node.data == undefined) return null
 

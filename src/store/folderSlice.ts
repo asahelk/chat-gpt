@@ -1,22 +1,23 @@
 import { Folder, FolderWithId, Id } from '@/type'
 import { StateCreator } from 'zustand'
-import { ConversationState } from './conversationSlice'
+import { StoreState } from './boundStore'
 
-export interface ForlderState {
+export interface FolderState {
+  foldersList: FolderWithId[]
   removeFolder: ({ id }: { id: Id }) => void
   addNewFolder: (folder: Folder) => void
   updateFolder: (folder: FolderWithId) => Promise<void>
-  foldersList: FolderWithId[]
+  updateFoldersList: (foldersList: FolderWithId[]) => Promise<void>
 }
 
 export const createFolderSlice: StateCreator<
-  ForlderState & ConversationState,
+  StoreState,
+  [['zustand/persist', unknown]],
   [],
-  [],
-  ForlderState
+  FolderState
 > = (set) => ({
   foldersList: [],
-  removeFolder: ({ id }: { id: string }) =>
+  removeFolder: ({ id }: { id: Id }) =>
     set((state) => ({
       foldersList: state.foldersList.filter(
         (folder: FolderWithId) => folder.id !== id
@@ -30,9 +31,23 @@ export const createFolderSlice: StateCreator<
     }))
   },
   updateFolder: async (folder: FolderWithId) => {
-    set((state) => ({
-      ...state,
-      folder
-    }))
+    set((state) => {
+      const index = state.foldersList.findIndex((e) => e.id === folder.id)
+
+      state.foldersList[index] = {
+        ...state.foldersList[index],
+        ...folder
+      }
+      return {
+        foldersList: [...state.foldersList]
+      }
+    })
+  },
+  updateFoldersList: async (foldersList: FolderWithId[]) => {
+    set(() => {
+      return {
+        foldersList: foldersList
+      }
+    })
   }
 })

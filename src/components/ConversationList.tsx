@@ -1,26 +1,25 @@
 import { useStore } from '@/store/boundStore'
 import { Conversation } from './Conversation'
 
-
 interface Props {
   isFavoriteList: boolean
 }
 
-export const ConversationList:  React.FC<Props> = ({ isFavoriteList }) => {
-  let conversationList = useStore((state) => state.conversationsList)
+export const ConversationList: React.FC<Props> = ({ isFavoriteList }) => {
+  let conversationsList = useStore((state) => state.conversationsList)
 
   // let conversationList = []
 
   // if (conversationsInfo) {
-    // conversationList = Object.entries(conversationsInfo).map(
-    //   ([_, item]) => item
-    // )
-    conversationList = isFavoriteList
-      ? conversationList.filter((e) => e.isFavorite)
-      : conversationList
+  // conversationList = Object.entries(conversationsInfo).map(
+  //   ([_, item]) => item
+  // )
+  conversationsList = isFavoriteList
+    ? conversationsList.filter((e) => e.isFavorite)
+    : conversationsList
   // }
 
-  const Element = conversationList.map((conversation) => {
+  const Element = conversationsList.map((conversation) => {
     return (
       <Conversation
         conversation={conversation}

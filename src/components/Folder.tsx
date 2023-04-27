@@ -1,7 +1,6 @@
 import { useChatComponent } from '@/app/hooks/useChatComponent'
 import { useStore } from '@/store/boundStore'
 import { FolderWithId } from '@/type'
-import { useState } from 'react'
 import { ArrowDownIcon, ArrowRightIcon } from './Icons'
 
 interface Props {
@@ -14,19 +13,26 @@ interface Props {
 export const Folder: React.FC<Props> = ({ folder, ...inputProps }) => {
   const { onToggle, background = '', bggradient = '' } = inputProps
 
-  const isOpen = useState(folder.isOpen)
   const removeFolder = useStore((state) => state.removeFolder)
   const updateFolder = useStore((state) => state.updateFolder)
 
-  const { ElementTitle, RenderInputActions } = useChatComponent({
+  const { ElementTitle, RenderInputActions } = useChatComponent<FolderWithId>({
     id: folder.id,
     title: folder.text,
     className: bggradient,
-    callbackOnSubmit: () => updateFolder,
+    callbackOnSubmit: (folder) => updateFolder(folder),
     removeCallback: removeFolder
   })
 
-  const renderArrowIcon = isOpen ? <ArrowDownIcon /> : <ArrowRightIcon />
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    updateFolder({
+      ...folder,
+      isOpen: !folder.isOpen
+    })
+    onToggle(event)
+  }
+
+  const renderArrowIcon = folder.isOpen ? <ArrowDownIcon /> : <ArrowRightIcon />
 
   return (
     <div>
@@ -40,7 +46,7 @@ export const Folder: React.FC<Props> = ({ folder, ...inputProps }) => {
         aria-describedby='DndDescribedBy-1'
       >
         <button
-          onClick={onToggle}
+          onClick={handleClick}
           className='flex items-center justify-start space-x-2 min-w-0 w-full py-2 text-sm'
         >
           {renderArrowIcon}
@@ -54,10 +60,6 @@ export const Folder: React.FC<Props> = ({ folder, ...inputProps }) => {
 
         {RenderInputActions()}
       </div>
-
-      {/* <div className='pl-6 space-y-2 relative hidden !block'>
-        {showFolderDetails && <ConversationList />}
-      </div> */}
     </div>
   )
 }

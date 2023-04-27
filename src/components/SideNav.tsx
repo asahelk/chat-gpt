@@ -16,15 +16,20 @@ export const SideNav: React.FC<Props> = ({ className }) => {
   const addNewFolder = useStore((state) => state.addNewFolder)
 
   const clearConversations = useStore((state) => state.clearConversations)
+  const isShowNavOpen = useStore((state) => state.isShowNavOpen)
 
   // const [animationParent] = useAutoAnimate()
 
   const placeHolderName = 'New folder'
 
+  const sideNavClassName = isShowNavOpen
+    ? '!translate-x-0 '
+    : '-translate-x-full '
+
   return (
     <>
       <aside
-        className={`${className} lg:inset-y-0 lg:flex min-[370px]:w-80 w-64 lg:flex-col z-40 transition h-full`}
+        className={`${sideNavClassName} ${className} lg:inset-y-0 lg:flex min-[370px]:w-80 w-64 lg:flex-col z-40 transition h-full`}
       >
         {/* <nav className='flex-1 space-y-2 flex flex-col overflow-y-auto'> */}
         <div className='flex h-full min-h-0 flex-1 flex-col bg-gptdarkgray'>
@@ -58,7 +63,7 @@ export const SideNav: React.FC<Props> = ({ className }) => {
                 </div>
                 <hr className='h-px my-2 bg-gptlightgray border-0 ' />
               </div>
-              <div className='flex-col flex-1 overflow-y-auto mt-3'>
+              <div className='flex-col flex-1 overflow-y-auto mt-2'>
                 <div className='flex flex-col h-full gap-2 text-sm text-gray-100'>
                   <DndProvider
                     backend={MultiBackend}

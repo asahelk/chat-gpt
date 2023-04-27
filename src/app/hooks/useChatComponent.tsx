@@ -1,28 +1,25 @@
 // Replace this with the path to your actual autoHeightOnTyping utility function
-import { CheckIcon, PencilIcon, TrashIcon } from '@/components/Icons'
+import { CheckIcon, CloseIcon, PencilIcon, TrashIcon } from '@/components/Icons'
 import { autoHeightOnTyping } from '@/utils/helper'
 import { useEffect, useRef, useState } from 'react'
-import { ConversationWithId, FolderWithId, Id } from '../../type'
+import { Id } from '../../type'
 
-type ChatComponent = {
+type ChatComponent<T> = {
   id: Id
   title: string
-  isFav?: boolean
   className: string
-  callbackOnSubmit: (object: FolderWithId | ConversationWithId) => void
+  callbackOnSubmit: (object: T) => void
   removeCallback: ({ id }: { id: Id }) => void
 }
 
-export function useChatComponent({
+export function useChatComponent<T>({
   id,
   title,
-  isFav,
   className,
   callbackOnSubmit,
   removeCallback
-}: ChatComponent) {
+}: ChatComponent<T>) {
   const [isEditing, setIsEditing] = useState(false)
-  const [chatTitle, setChatTitle] = useState(title)
   const textAreaRef = useRef<HTMLTextAreaElement>(null)
 
   function onHandleEditCheckButton(event: React.MouseEvent<HTMLButtonElement>) {
@@ -63,9 +60,9 @@ export function useChatComponent({
   const handleSubmit = (event?: React.FormEvent<HTMLFormElement>) => {
     event?.preventDefault()
     // const { value } = textAreaRef.current
-    const value = textAreaRef.current?.value
-    // callbackOnSubmit({ id, name: value, isFavorite: isFav })
-    // setChatTitle(value)
+    const value = textAreaRef.current?.value || ''
+    const obj = { id, text: value } as T
+    callbackOnSubmit(obj)
     setIsEditing(!isEditing)
   }
 
@@ -79,7 +76,7 @@ export function useChatComponent({
   }
 
   const RenderEditCheckIcon = isEditing ? <CheckIcon /> : <PencilIcon />
-  const RenderTrashCloseIcon = isEditing ? <CheckIcon /> : <TrashIcon />
+  const RenderTrashCloseIcon = isEditing ? <CloseIcon /> : <TrashIcon />
 
   useEffect(() => {
     const el = textAreaRef?.current as HTMLElement
@@ -90,7 +87,11 @@ export function useChatComponent({
   const ElementTitle = () => {
     if (isEditing) {
       return (
-        <form onSubmit={handleSubmit} onKeyDown={handleKeyDown}>
+        <form
+          onSubmit={handleSubmit}
+          onKeyDown={handleKeyDown}
+          className='w-full'
+        >
           <textarea
             onKeyUp={(e) => e.preventDefault()}
             onChange={handleChange}
@@ -99,7 +100,7 @@ export function useChatComponent({
             autoFocus
             onFocus={handleFocusTextArea}
             onClick={handleInputClick}
-            defaultValue={chatTitle}
+            defaultValue={title}
             className='text-white rounded-sm px-0 py-0 border-0 ring-blue-500 focus:ring-2 ring-2 sm:text-sm w-full text-base'
           />
         </form>
@@ -108,7 +109,7 @@ export function useChatComponent({
 
     return (
       <div className='relative flex-1 overflow-hidden break-all text-ellipsis max-h-5 w-full'>
-        {chatTitle}
+        {title}
         <div
           className={`${className} absolute inset-y-0 right-0 w-8 z-10 bg-gradient-to-l group-focus-within:from-gptCharcoalGray from-gptdarkgray group-hover:from-gptMidnightBlue`}
           data-gradient='true'

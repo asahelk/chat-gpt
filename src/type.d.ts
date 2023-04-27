@@ -1,7 +1,7 @@
-export type Id = string
+export type Id = string | number
 
 export interface Folder {
-  parent: string
+  parent: Id
   text: string
   droppable: boolean
   isNew: boolean
@@ -19,7 +19,7 @@ export interface FolderWithId extends Folder {
 }
 
 export interface Conversation {
-  parent: string
+  parent: Id
   text: string
   droppable: boolean
   messages?: Message[] | null
@@ -71,3 +71,5 @@ export type CustomData = {
   fileType: string
   fileSize: string
 }
+
+export type TreeModel = ConversationWithId | FolderWithId

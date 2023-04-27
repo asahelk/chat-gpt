@@ -1,25 +1,29 @@
+'use client'
+
+import { useStore } from '@/store/boundStore'
 import { CloseIcon } from './Icons'
 import { SideNav } from './SideNav'
 
-interface Props {
-  isShowNavOpen: boolean
-  onToggle: (event: React.MouseEvent<HTMLButtonElement>) => void
-}
+interface Props {}
 
-export const Aside: React.FC<Props> = ({ isShowNavOpen, onToggle }) => {
+export const Aside: React.FC<Props> = () => {
+  const setIsShowNavOpen = useStore((state) => state.setIsShowNavOpen)
+  const isShowNavOpen = useStore((state) => state.isShowNavOpen)
+
+  const handleToggle = () => {
+    setIsShowNavOpen({ value: !isShowNavOpen })
+  }
+
   const buttonClassName = !isShowNavOpen ? '!opacity-0 pointer-events-none' : ''
   const wrapClassName = !isShowNavOpen
     ? '-translate-x-full hidden'
     : 'fixed lg:relative'
-  const sideNavClassName = isShowNavOpen
-    ? '!translate-x-0 '
-    : '-translate-x-full '
 
   return (
     <>
       <button
         type='button'
-        onClick={onToggle}
+        onClick={handleToggle}
         className={`${buttonClassName} lg:hidden fixed z-40 left-0 top-0 w-full h-full bg-gptlightgray bg-opacity-75 transition duration-300`}
       />
       <div
@@ -28,7 +32,7 @@ export const Aside: React.FC<Props> = ({ isShowNavOpen, onToggle }) => {
         <div className='relative flex h-full w-full max-w-xs flex-1 flex-col bg-gptdarkgray pointer-events-auto'>
           <div className='absolute top-0 right-0 -mr-12 pt-2'>
             <button
-              onClick={onToggle}
+              onClick={handleToggle}
               type='button'
               className={`${
                 isShowNavOpen ? 'lg:hidden' : ''
@@ -38,7 +42,7 @@ export const Aside: React.FC<Props> = ({ isShowNavOpen, onToggle }) => {
               <CloseIcon className='w-6 h-6' />
             </button>
           </div>
-          <SideNav className={sideNavClassName} />
+          <SideNav />
         </div>
         <div className='w-14 flex-shrink-0' />
       </div>

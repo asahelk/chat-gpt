@@ -8,7 +8,7 @@ import {
 import { defaultConversationInit } from '@/utils/initObjects'
 import { compress } from 'lz-ts'
 import { StateCreator } from 'zustand'
-import { ForlderState } from './folderSlice'
+import { StoreState } from './boundStore'
 
 export interface ConversationState {
   loading: boolean
@@ -17,14 +17,15 @@ export interface ConversationState {
   removeConversation: ({ id }: { id: Id }) => void
   addNewConversation: (conversation: Conversation) => void
   updateConversation: (conversation: ConversationWithId) => void
+  updateConversationsList: (conversationsList: ConversationWithId[]) => void
   clearConversations: () => void
   selectConversation: ({ id }: { id: Id }) => void
   sendPrompt: ({ prompt }: { prompt: string }) => void
 }
 
 export const createConversationSlice: StateCreator<
-  ForlderState & ConversationState,
-  [],
+  StoreState,
+  [['zustand/persist', unknown]],
   [],
   ConversationState
 > = (set, get) => ({
@@ -64,10 +65,27 @@ export const createConversationSlice: StateCreator<
     }))
   },
   updateConversation: (conversation) => {
-    set((state) => ({
-      ...state,
-      ...conversation
-    }))
+    set((state) => {
+      const index = state.conversationsList.findIndex(
+        (e) => e.id === conversation.id
+      )
+
+      state.conversationsList[index] = {
+        ...state.conversationsList[index],
+        ...conversation
+      }
+
+      return {
+        conversationsList: [...state.conversationsList]
+      }
+    })
+  },
+  updateConversationsList: (conversationsList) => {
+    set((state) => {
+      return {
+        conversationsList: conversationsList
+      }
+    })
   },
   sendPrompt: async ({ prompt }) => {
     // let selectedConversationId = get().selectedConversationId

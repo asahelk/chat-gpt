@@ -1,37 +1,54 @@
 import { mountStoreDevtool } from 'simple-zustand-devtools'
 import { create } from 'zustand'
+import { createJSONStorage, devtools, persist } from 'zustand/middleware'
 import { ConversationState, createConversationSlice } from './conversationSlice'
-import { ForlderState, createFolderSlice } from './folderSlice'
+import { FolderState, createFolderSlice } from './folderSlice'
+import { WebState, createWebSlice } from './webSlice'
 
-// const emptyState = (...a) => ({
-//   ...createFolderSlice(...a),
-//   ...createConversationSlice(...a)
-// })
+export type StoreState = FolderState & ConversationState & WebState
 
-export const useStore = create<ForlderState & ConversationState>()((...a) => ({
+const emptyState = (
+  ...a: Parameters<typeof createConversationSlice>
+): StoreState => ({
   ...createFolderSlice(...a),
-  ...createConversationSlice(...a)
-}))
+  ...createConversationSlice(...a),
+  ...createWebSlice(...a)
+})
 
-// export const useBoundStore2 = create(
-//   persist<ForlderState & ConversationState>(emptyState, {
-//     name: 'gpt-store',
-//     storage: createJSONStorage(() => ({
-//       // Returning a promise from getItem is necessary to avoid issues with hydration
-//       getItem: async (name) => {
-//         // const isServer = typeof window === 'undefined'
-//         // if (isServer) return
+export const useStore = create<StoreState>()(
+  devtools(
+    persist(emptyState, {
+      name: 'gpt-store',
+      storage: createJSONStorage(() => ({
+        // Returning a promise from getItem is necessary to avoid issues with hydration
+        getItem: async (name) => {
+          // const isServer = typeof window === 'undefined'
+          // if (isServer) return
 
-//         // const value = localStorage?.getItem(name)
-//         // return value
-//         return localStorage.getItem(name)
-//       },
+          // const value = localStorage?.getItem(name)
+          // return value
+          return localStorage?.getItem(name)
+        },
 
-//       setItem: (name, value) => localStorage?.setItem(name, value),
-//       removeItem: (name) => localStorage?.removeItem(name)
-//     }))
-//   })
-// )
+        setItem: (name, value) => localStorage?.setItem(name, value),
+        removeItem: (name) => localStorage?.removeItem(name)
+      })),
+      version: 1,
+      onRehydrateStorage: (state) => {
+        console.log('hydration starts')
+
+        // optional
+        return (state, error) => {
+          if (error) {
+            console.log('an error happened during hydration', error)
+          } else {
+            console.log('hydration finished')
+          }
+        }
+      }
+    })
+  )
+)
 
 // export const useStore = ((selector, compare) => {
 //   /*
@@ -42,7 +59,13 @@ export const useStore = create<ForlderState & ConversationState>()((...a) => ({
 //   const store = useBoundStore(selector, compare)
 //   const [isHydrated, setHydrated] = useState(false)
 //   useEffect(() => setHydrated(true), [])
-//   return isHydrated ? store : selector(emptyState)
+
+//   if (isHydrated) {
+//     console.log('isHydrated xD')
+//     return store
+//   }
+//   console.log('NUNCA ENTRO AQUI xD')
+//   return selector(emptyState2)
 // }) as typeof useBoundStore
 
 if (process.env.NODE_ENV === 'development') {

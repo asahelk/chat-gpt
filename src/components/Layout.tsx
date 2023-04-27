@@ -1,5 +1,6 @@
-import { SideNav } from '@/components/SideNav'
-import Head from 'next/head'
+import { Aside } from './Aside'
+import { ChatForm } from './CreatePrompt'
+import { Header } from './Header'
 
 type Props = {
   children: React.ReactNode
@@ -7,14 +8,16 @@ type Props = {
 
 export const Layout: React.FC<Props> = ({ children }) => {
   return (
-    <>
-      <Head>
-        <title>Chat GPT</title>
-      </Head>
-      <div className='relative w-full h-screen bg-gptgray'>
-        <SideNav />
-        {children}
+    <div className='relative w-full flex h-screen bg-gptgray'>
+      <Aside />
+
+      <div className={`flex flex-col w-full h-full`}>
+        <main className='overflow-hidden flex flex-col relative h-full w-full'>
+          <Header />
+          {children}
+          <ChatForm />
+        </main>
       </div>
-    </>
+    </div>
   )
 }

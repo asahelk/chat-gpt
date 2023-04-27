@@ -1,37 +1,74 @@
-import { ConversationWithId, FolderWithId } from '@/type'
-import { NodeModel, Tree } from '@minoru/react-dnd-treeview'
-import { useState } from 'react'
+import { useStore } from '@/store/boundStore'
+import { ConversationWithId, FolderWithId, TreeModel } from '@/type'
+import { DropOptions, NodeModel, Tree } from '@minoru/react-dnd-treeview'
+import { useEffect, useState } from 'react'
 import styles from '../app/styles/Home.module.css'
-import chats from '../chats.json'
-import folders from '../folders.json'
 import { CustomDragPreview } from './CustomDragPreview'
 import { TreeNode } from './TreeNode'
 
 export function TreeSideNav() {
-  const arrayData = [...folders, ...chats]
-  const formatArrayData: NodeModel<ConversationWithId | FolderWithId>[] =
-    arrayData.map((e) => ({
+  const [isHydrated, setIsHydrated] = useState(false)
+
+  useEffect(() => {
+    setIsHydrated(true)
+  }, [])
+
+  const foldersList = useStore((state) => state.foldersList)
+
+  const conversationsList = useStore((state) => state.conversationsList)
+
+  const updateConversation = useStore((state) => state.updateConversation)
+
+  const updateFoldersList = useStore((state) => state.updateFoldersList)
+
+  const updateConversationsList = useStore(
+    (state) => state.updateConversationsList
+  )
+
+  const updateFolder = useStore((state) => state.updateFolder)
+
+  const arrayData = [...foldersList, ...conversationsList]
+
+  const formatArrayData: NodeModel<TreeModel>[] = arrayData
+    .map((e) => ({
       id: e.id,
       parent: e.parent,
       text: e.text,
       droppable: e.droppable,
       data: e
     }))
-  const [treeData, setTreeData] =
-    useState<NodeModel<ConversationWithId | FolderWithId>[]>(formatArrayData)
+    .sort((a, b) => a.data.order - b.data.order)
 
-  const handleDrop = (
-    newTree: NodeModel<ConversationWithId | FolderWithId>[]
-  ) => {
-    setTreeData(newTree)
+  const handleOnDrop = (newTree: NodeModel<TreeModel>[]) => {
+    const formatTree = newTree.map(
+      (e, index) => ({ ...e.data, order: index, parent: e.parent } as TreeModel)
+    )
+
+    const conversations = formatTree.filter((e) => e.type === 'CHAT')
+    const folders = formatTree.filter((e) => e.type === 'FOLDER')
+
+    updateConversationsList(conversations as ConversationWithId[])
+    updateFoldersList(folders as FolderWithId[])
   }
+
+  const handleCanDrop = (_: any, options: DropOptions<TreeModel>) => {
+    const { dragSource, dropTargetId } = options
+
+    if (dragSource?.parent === dropTargetId) {
+      return true
+    }
+  }
+
+  if (!isHydrated) return <span>Loading...</span>
 
   return (
     <div className={styles.wrapper}>
       <Tree
-        tree={treeData}
-        onDrop={handleDrop}
+        tree={formatArrayData}
+        onDrop={handleOnDrop}
+        canDrop={handleCanDrop}
         sort={false}
+        insertDroppableFirst={false}
         dropTargetOffset={10}
         classes={{
           root: styles.treeRoot,
@@ -51,21 +88,6 @@ export function TreeSideNav() {
           return <div className={styles.placeHolder} style={{ left }} />
         }}
         render={(node, options) => <TreeNode node={node} {...options} />}
-
-        // canDrop={(node, target) => {
-        //   console.log('el canDrop node2', node)
-        //   console.log('target', target)
-
-        //   if (
-        //     // && target.dragSource.chatType === 'FOLDER'
-        //     (target && target.dropTargetId === target.dragSourceId) ||
-        //     target.dropTarget?.chatType === 'CHAT'
-        //   ) {
-        //     return false
-        //   }
-
-        //   return true
-        // }}
       />
     </div>
   )

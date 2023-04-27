@@ -47,7 +47,7 @@
 
 .placeHolder{
   /* @apply bg-blue-500; */
-  @apply shadow-inner shadow-gptlogo;
+  @apply shadow-inner shadow-gptlogo z-10;
   height: 2px;
   position: absolute;
   right: 0;
@@ -60,4 +60,9 @@
   outline: 3px solid #e8f0fe;
   background:red !important;
   border-radius: 4px;
+}
+
+.wrapper{
+  height: 100%;
+  margin-top: 4px;
 }
