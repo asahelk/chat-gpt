@@ -15,7 +15,7 @@ export const Conversation: React.FC<Props> = ({
   isFavoriteList,
   ...inputProps
 }) => {
-  const { background, bggradient } = inputProps
+  const { background = '', bggradient = '' } = inputProps
 
   const removeConversation = useStore((state) => state.removeConversation)
 
@@ -43,7 +43,7 @@ export const Conversation: React.FC<Props> = ({
     <div
       {...inputProps}
       onClick={() => selectConversation({ id: conversation.id })}
-      className={`${background} focus-within:bg-gptCharcoalGray relative flex items-center gap-3 px-3 py-3 break-all cursor-pointer group hover:bg-gptMidnightBlue`}
+      className={`${background} focus-within:bg-gptCharcoalGray relative flex items-center gap-3 pl-3 py-3 break-all cursor-pointer group hover:bg-gptMidnightBlue`}
     >
       <MessageFavIcon
         className={`text-gray-300 h-5 w-5 flex-shrink-0 hidden sm:block ${

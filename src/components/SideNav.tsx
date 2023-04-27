@@ -63,7 +63,7 @@ export const SideNav: React.FC<Props> = ({ className }) => {
                 </div>
                 <hr className='h-px my-2 bg-gptlightgray border-0 ' />
               </div>
-              <div className='flex-col flex-1 overflow-y-auto mt-2'>
+              <div className='flex-col flex-1 overflow-y-auto mt-1'>
                 <div className='flex flex-col h-full gap-2 text-sm text-gray-100'>
                   <DndProvider
                     backend={MultiBackend}
