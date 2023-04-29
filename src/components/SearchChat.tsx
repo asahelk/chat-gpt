@@ -14,7 +14,7 @@ export function SearchChat() {
   }
 
   function handleKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
-    if (event.keyCode == 27) {
+    if (event.key === 'Escape') {
       event?.preventDefault()
       setSearchTerm({ value: '' })
     }

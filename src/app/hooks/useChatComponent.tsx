@@ -50,9 +50,14 @@ export function useChatComponent<T>({
   }
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLFormElement>) => {
+    if (event.key === 'Escape') {
+      event?.preventDefault()
+      setIsEditing(false)
+      return
+    }
+
     if (event.key === 'Enter' && !event.shiftKey) {
       event?.preventDefault()
-
       handleSubmit()
     }
   }
