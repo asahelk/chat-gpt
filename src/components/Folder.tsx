@@ -1,6 +1,7 @@
 import { useChatComponent } from '@/app/hooks/useChatComponent'
+import { useTreeSideNav } from '@/app/hooks/useTreeSideNav'
 import { useStore } from '@/store/boundStore'
-import { FolderWithId } from '@/type'
+import type { FolderWithId } from '@/type'
 import { ArrowDownIcon, ArrowRightIcon } from './Icons'
 
 interface Props {
@@ -10,14 +11,18 @@ interface Props {
   onToggle: (event: React.MouseEvent<HTMLButtonElement>) => void
 }
 
-export const Folder: React.FC<Props> = ({ folder, ...inputProps }) => {
-  const { onToggle, background = '', bggradient = '' } = inputProps
+export const Folder: React.FC<Props> = ({
+  folder,
+  onToggle,
+  ...inputProps
+}) => {
+  const { background = '', bggradient = '' } = inputProps
 
   const removeFolder = useStore((state) => state.removeFolder)
   const updateFolder = useStore((state) => state.updateFolder)
 
-  const conversationsList = useStore((state) => state.conversationsList)
-  const chatsQuantity = conversationsList.filter(
+  const { filteredSearch } = useTreeSideNav()
+  const chatsQuantity = filteredSearch?.filter(
     (e) => e.parent === folder.id
   ).length
 
@@ -30,11 +35,12 @@ export const Folder: React.FC<Props> = ({ folder, ...inputProps }) => {
   })
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation()
+    // onToggle(event)
     updateFolder({
       ...folder,
       isOpen: !folder.isOpen
     })
-    onToggle(event)
   }
 
   const renderArrowIcon = folder.isOpen ? <ArrowDownIcon /> : <ArrowRightIcon />

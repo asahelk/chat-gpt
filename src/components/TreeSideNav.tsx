@@ -1,6 +1,9 @@
+import { useTreeSideNav } from '@/app/hooks/useTreeSideNav'
+import { CHAT_TYPES } from '@/constants'
 import { useStore } from '@/store/boundStore'
-import { ConversationWithId, FolderWithId, TreeModel } from '@/type'
-import { DropOptions, NodeModel, Tree } from '@minoru/react-dnd-treeview'
+import { ConversationWithId, FolderWithId, NodeEntity, TreeModel } from '@/type'
+import { isEquaI } from '@/utils/helper'
+import { DropOptions, Tree } from '@minoru/react-dnd-treeview'
 import { useEffect, useState } from 'react'
 import styles from '../app/styles/Home.module.css'
 import { CustomDragPreview } from './CustomDragPreview'
@@ -13,11 +16,7 @@ export function TreeSideNav() {
     setIsHydrated(true)
   }, [])
 
-  const foldersList = useStore((state) => state.foldersList)
-
-  const conversationsList = useStore((state) => state.conversationsList)
-
-  const updateConversation = useStore((state) => state.updateConversation)
+  const { formattedTreeNodeList } = useTreeSideNav()
 
   const updateFoldersList = useStore((state) => state.updateFoldersList)
 
@@ -25,27 +24,27 @@ export function TreeSideNav() {
     (state) => state.updateConversationsList
   )
 
-  const updateFolder = useStore((state) => state.updateFolder)
+  const { filteredSearch } = useTreeSideNav()
 
-  const arrayData = [...foldersList, ...conversationsList]
+  const handleOnDrop = (newTree: NodeEntity<TreeModel>[]) => {
+    if (isEquaI(newTree, formattedTreeNodeList)) return
 
-  const formatArrayData: NodeModel<TreeModel>[] = arrayData
-    .map((e) => ({
-      id: e.id,
-      parent: e.parent,
-      text: e.text,
-      droppable: e.droppable,
-      data: e
-    }))
-    .sort((a, b) => a.data.order - b.data.order)
+    const concatenatedTreeData = newTree.concat(formattedTreeNodeList)
 
-  const handleOnDrop = (newTree: NodeModel<TreeModel>[]) => {
-    const formatTree = newTree.map(
-      (e, index) => ({ ...e.data, order: index, parent: e.parent } as TreeModel)
+    const uniqueTreeData = concatenatedTreeData.filter(
+      (v, index, array) => array.findIndex((e) => e.id === v.id) === index
     )
 
-    const conversations = formatTree.filter((e) => e.type === 'CHAT')
-    const folders = formatTree.filter((e) => e.type === 'FOLDER')
+    const formattedTreeData = uniqueTreeData.map(
+      (e, index) => ({ ...e.data, parent: e.parent, order: index } as TreeModel)
+    )
+
+    const conversations = formattedTreeData.filter(
+      (e) => e.type === CHAT_TYPES.CHAT
+    )
+    const folders = formattedTreeData.filter(
+      (e) => e.type === CHAT_TYPES.FOLDER
+    )
 
     updateConversationsList(conversations as ConversationWithId[])
     updateFoldersList(folders as FolderWithId[])
@@ -59,13 +58,19 @@ export function TreeSideNav() {
     }
   }
 
+  const initialOpenIDs = (filteredSearch as NodeEntity<FolderWithId>[])
+    .filter((e) => e.data.isOpen)
+    .map((e) => e.id)
+
   if (!isHydrated) return <span>Loading...</span>
 
   return (
     <div className={styles.wrapper}>
       <Tree
-        tree={formatArrayData}
-        onDrop={handleOnDrop}
+        tree={filteredSearch}
+        onDrop={(tree, options) =>
+          handleOnDrop(tree as NodeEntity<TreeModel>[])
+        }
         canDrop={handleCanDrop}
         sort={false}
         insertDroppableFirst={false}
@@ -81,13 +86,15 @@ export function TreeSideNav() {
         dragPreviewRender={(monitorProps) => {
           return <CustomDragPreview monitorProps={monitorProps} />
         }}
-        initialOpen
-        rootId='0'
+        initialOpen={initialOpenIDs}
+        rootId={'0'}
         placeholderRender={(node, { depth }) => {
           const left = depth * 24
           return <div className={styles.placeHolder} style={{ left }} />
         }}
-        render={(node, options) => <TreeNode node={node} {...options} />}
+        render={(node, options) => (
+          <TreeNode node={node as NodeEntity<TreeModel>} {...options} />
+        )}
       />
     </div>
   )

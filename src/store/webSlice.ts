@@ -3,7 +3,9 @@ import { StoreState } from './boundStore'
 
 export interface WebState {
   isShowNavOpen: boolean
+  searchTerm: string
   setIsShowNavOpen: ({ value }: { value: boolean }) => void
+  setSearchTerm: ({ value }: { value: string }) => void
 }
 
 export const createWebSlice: StateCreator<
@@ -13,8 +15,14 @@ export const createWebSlice: StateCreator<
   WebState
 > = (set) => ({
   isShowNavOpen: true,
-  setIsShowNavOpen: ({ value }: { value: boolean }) =>
+  searchTerm: '',
+  setIsShowNavOpen: ({ value }) =>
     set(() => ({
       isShowNavOpen: value
+    })),
+  setSearchTerm: ({ value }) => {
+    set(() => ({
+      searchTerm: value
     }))
+  }
 })

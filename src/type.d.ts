@@ -1,3 +1,5 @@
+import { NodeModel } from '@minoru/react-dnd-treeview'
+
 export type Id = string | number
 
 export interface Folder {
@@ -22,7 +24,7 @@ export interface Conversation {
   parent: Id
   text: string
   droppable: boolean
-  messages?: Message[] | null
+  messages: Message[]
   model: string
   systemMessage: string
   character?: Character | null
@@ -73,3 +75,7 @@ export type CustomData = {
 }
 
 export type TreeModel = ConversationWithId | FolderWithId
+
+export interface NodeEntity<T = unknown> extends NodeModel<T> {
+  data: T
+}

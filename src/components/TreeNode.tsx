@@ -1,11 +1,15 @@
 import { CHAT_TYPES, TREE_X_OFFSET } from '@/constants'
-import { FolderWithId, type ConversationWithId } from '@/type'
-import { NodeModel } from '@minoru/react-dnd-treeview'
+import {
+  type ConversationWithId,
+  type FolderWithId,
+  type NodeEntity,
+  type TreeModel
+} from '@/type'
 import { Conversation } from './Conversation'
 import { Folder } from './Folder'
 
 type Props = {
-  node: NodeModel<ConversationWithId | FolderWithId>
+  node: NodeEntity<TreeModel>
   depth: number
   isOpen: boolean
   onToggle: (event: React.MouseEvent<HTMLButtonElement>) => void

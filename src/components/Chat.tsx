@@ -21,7 +21,7 @@ export function Chat() {
     return (
       <div className='flex-1 overflow-hidden'>
         <div className='h-full overflow-auto'>
-          {conversation?.messages?.map((elem) => (
+          {conversation?.messages.map((elem) => (
             <Message key={elem.id} {...elem} />
           ))}
           <div className='flex-shrink-0 w-full h-32 md:h-48 bg-gptgray' />
