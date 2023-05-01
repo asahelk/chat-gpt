@@ -1,5 +1,5 @@
 type ClassName = {
-	className?: string
+  className?: string
 }
 
 export function SendIcon() {
@@ -286,7 +286,7 @@ export function ReactIcon({ className }: ClassName) {
   )
 }
 
-export function CloseIcon({ className = 'w-4 h-4' } : ClassName) {
+export function CloseIcon({ className = 'w-4 h-4' }: ClassName) {
   return (
     <svg
       stroke='currentColor'
@@ -387,7 +387,7 @@ export function PencilInSquareIcon() {
   )
 }
 
-export function CheckIcon({ className = 'w-4 h-4' } : ClassName ) {
+export function CheckIcon({ className = 'w-4 h-4' }: ClassName) {
   return (
     <svg
       stroke='currentColor'

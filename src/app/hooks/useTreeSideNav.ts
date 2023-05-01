@@ -1,5 +1,5 @@
 import { useStore } from '@/store/boundStore'
-import { NodeEntity, TreeModel } from '@/type'
+import type { Id, NodeEntity, TreeModel } from '@/type'
 import { filterTreeModel } from '@/utils/helper'
 
 export const useTreeSideNav = () => {
@@ -23,5 +23,21 @@ export const useTreeSideNav = () => {
 
   const filteredSearch = filterTreeModel(formattedTreeNodeList, searchTerm)
 
-  return { formattedTreeNodeList, filteredSearch }
+  const updatePartialConversationsList = useStore(
+    (state) => state.updatePartialConversationsList
+  )
+
+  const updateConversationsOnRemoveFolder = ({ id }: { id: Id }) => {
+    const filteredConversations = conversationsList
+      .filter((e) => e.parent === id)
+      .map((e) => ({ ...e, parent: '0' }))
+
+    updatePartialConversationsList(filteredConversations)
+  }
+
+  return {
+    formattedTreeNodeList,
+    filteredSearch,
+    updateConversationsOnRemoveFolder
+  }
 }

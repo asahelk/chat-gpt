@@ -1,12 +1,14 @@
-// Replace this with the path to your actual autoHeightOnTyping utility function
 import { CheckIcon, CloseIcon, PencilIcon, TrashIcon } from '@/components/Icons'
+import { CHAT_TYPES } from '@/constants'
+import { Id } from '@/type'
 import { autoHeightOnTyping } from '@/utils/helper'
 import { useEffect, useRef, useState } from 'react'
-import { Id } from '../../type'
+import { useTreeSideNav } from './useTreeSideNav'
 
 type ChatComponent<T> = {
   id: Id
   title: string
+  type: keyof typeof CHAT_TYPES
   className: string
   callbackOnSubmit: (object: T) => void
   removeCallback: ({ id }: { id: Id }) => void
@@ -16,25 +18,34 @@ export function useChatComponent<T>({
   id,
   title,
   className,
+  type,
   callbackOnSubmit,
   removeCallback
 }: ChatComponent<T>) {
-  const [isEditing, setIsEditing] = useState(false)
-  const textAreaRef = useRef<HTMLTextAreaElement>(null)
-
-  function onHandleEditCheckButton(event: React.MouseEvent<HTMLButtonElement>) {
-    setIsEditing(!isEditing)
-
-    if (isEditing) {
-      handleSubmit()
-    }
+  const ACTION_STATUS = {
+    IS_EDITING: 'IS_EDITING',
+    IS_REMOVING: 'IS_REMOVING',
+    NORMAL: 'NORMAL'
   }
 
-  const onHandleTrashCloseButton = () => {
-    setIsEditing(false)
+  const [currentStatus, setCurrentStatus] = useState(ACTION_STATUS.NORMAL)
 
-    if (!isEditing && removeCallback) {
+  const textAreaRef = useRef<HTMLTextAreaElement>(null)
+  const { updateConversationsOnRemoveFolder } = useTreeSideNav()
+
+  useEffect(() => {
+    if (currentStatus === ACTION_STATUS.IS_EDITING) {
+      const el = textAreaRef?.current as HTMLElement
+
+      autoHeightOnTyping(el)
+    }
+  }, [currentStatus === ACTION_STATUS.IS_EDITING])
+
+  const onHandleRemove = () => {
+    if (removeCallback) {
       removeCallback({ id })
+
+      if (type === CHAT_TYPES.FOLDER) updateConversationsOnRemoveFolder({ id })
     }
   }
 
@@ -52,7 +63,7 @@ export function useChatComponent<T>({
   const handleKeyDown = (event: React.KeyboardEvent<HTMLFormElement>) => {
     if (event.key === 'Escape') {
       event?.preventDefault()
-      setIsEditing(false)
+      setCurrentStatus(ACTION_STATUS.NORMAL)
       return
     }
 
@@ -64,11 +75,14 @@ export function useChatComponent<T>({
 
   const handleSubmit = (event?: React.FormEvent<HTMLFormElement>) => {
     event?.preventDefault()
-    // const { value } = textAreaRef.current
+    setCurrentStatus(ACTION_STATUS.NORMAL)
+
     const value = textAreaRef.current?.value || ''
+
+    if (title && title.toLocaleLowerCase() === value.toLocaleLowerCase()) return
+
     const obj = { id, text: value } as T
     callbackOnSubmit(obj)
-    setIsEditing(!isEditing)
   }
 
   const handleFocusTextArea = (
@@ -80,22 +94,64 @@ export function useChatComponent<T>({
     )
   }
 
-  const RenderEditCheckIcon = isEditing ? <CheckIcon /> : <PencilIcon />
-  const RenderTrashCloseIcon = isEditing ? <CloseIcon /> : <TrashIcon />
-
-  useEffect(() => {
-    const el = textAreaRef?.current as HTMLElement
-
-    autoHeightOnTyping(el)
-  }, [isEditing])
+  const ButtonsActions = {
+    [ACTION_STATUS.NORMAL]: (
+      <>
+        <button
+          onClick={() => setCurrentStatus(ACTION_STATUS.IS_EDITING)}
+          className='text-gray-500 hover:text-white transiton-all'
+        >
+          <PencilIcon />
+        </button>
+        <button
+          className='text-gray-500 hover:text-white transiton-all'
+          onClick={() => setCurrentStatus(ACTION_STATUS.IS_REMOVING)}
+        >
+          <TrashIcon />
+        </button>
+      </>
+    ),
+    [ACTION_STATUS.IS_EDITING]: (
+      <>
+        <button
+          onClick={() => handleSubmit()}
+          className='text-gray-500 hover:text-white transiton-all'
+        >
+          <CheckIcon />
+        </button>
+        <button
+          className='text-gray-500 hover:text-white transiton-all'
+          onClick={() => setCurrentStatus(ACTION_STATUS.NORMAL)}
+        >
+          <CloseIcon />
+        </button>
+      </>
+    ),
+    [ACTION_STATUS.IS_REMOVING]: (
+      <>
+        <button
+          onClick={onHandleRemove}
+          className='text-gray-500 hover:text-white transiton-all'
+        >
+          <CheckIcon />
+        </button>
+        <button
+          className='text-gray-500 hover:text-white transiton-all'
+          onClick={() => setCurrentStatus(ACTION_STATUS.NORMAL)}
+        >
+          <CloseIcon />
+        </button>
+      </>
+    )
+  }
 
   const ElementTitle = () => {
-    if (isEditing) {
+    if (currentStatus === ACTION_STATUS.IS_EDITING) {
       return (
         <form
           onSubmit={handleSubmit}
           onKeyDown={handleKeyDown}
-          className='w-full'
+          className='w-full flex items-center'
         >
           <textarea
             onKeyUp={(e) => e.preventDefault()}
@@ -106,7 +162,7 @@ export function useChatComponent<T>({
             onFocus={handleFocusTextArea}
             onClick={handleInputClick}
             defaultValue={title}
-            className='text-white rounded-sm px-0 py-0 border-0 ring-blue-500 focus:ring-2 ring-2 sm:text-sm w-full text-base'
+            className='text-white rounded-sm px-0 py-0 focus:ring-blue-500 focus:ring-1 sm:text-sm w-full text-base border-0 outline-none '
           />
         </form>
       )
@@ -123,24 +179,12 @@ export function useChatComponent<T>({
     )
   }
 
-  const RenderInputActions = () => {
+  const RenderButtonsActions = () => {
     return (
       <>
         <div className='pr-3'>
           <div className='flex items-center justify-center space-x-2'>
-            <button
-              onClick={onHandleEditCheckButton}
-              className='text-gray-500 hover:text-white transiton-all'
-            >
-              {RenderEditCheckIcon}
-            </button>
-
-            <button
-              className='text-gray-500 hover:text-white transiton-all'
-              onClick={onHandleTrashCloseButton}
-            >
-              {RenderTrashCloseIcon}
-            </button>
+            {ButtonsActions[currentStatus]}
           </div>
         </div>
       </>
@@ -148,11 +192,8 @@ export function useChatComponent<T>({
   }
 
   return {
-    isEditing,
-    onHandleEditCheckButton,
-    onHandleTrashCloseButton,
-    handleChange,
+    currentStatus,
     ElementTitle,
-    RenderInputActions
+    RenderButtonsActions
   }
 }

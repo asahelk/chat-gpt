@@ -1,5 +1,6 @@
 import { useChatComponent } from '@/app/hooks/useChatComponent'
 import { useTreeSideNav } from '@/app/hooks/useTreeSideNav'
+import { CHAT_TYPES } from '@/constants'
 import { useStore } from '@/store/boundStore'
 import type { FolderWithId } from '@/type'
 import { ArrowDownIcon, ArrowRightIcon } from './Icons'
@@ -26,13 +27,16 @@ export const Folder: React.FC<Props> = ({
     (e) => e.parent === folder.id
   ).length
 
-  const { ElementTitle, RenderInputActions } = useChatComponent<FolderWithId>({
-    id: folder.id,
-    title: folder.text,
-    className: bggradient,
-    callbackOnSubmit: (folder) => updateFolder(folder),
-    removeCallback: removeFolder
-  })
+  const { ElementTitle, RenderButtonsActions } = useChatComponent<FolderWithId>(
+    {
+      id: folder.id,
+      title: folder.text,
+      className: bggradient,
+      type: CHAT_TYPES.FOLDER,
+      callbackOnSubmit: (folder) => updateFolder(folder),
+      removeCallback: removeFolder
+    }
+  )
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation()
@@ -48,7 +52,7 @@ export const Folder: React.FC<Props> = ({
   return (
     <div
       {...inputProps}
-      className={`${background} focus-within:bg-gptCharcoalGray focus-within:text-white text-gray-300 hover:bg-gptMidnightBlue hover:text-white group flex items-center text-sm font-medium w-full space-x-2 justify-between overflow-hidden h-11`}
+      className={`${background} focus-within:bg-gptCharcoalGray focus-within:text-white text-gray-300 hover:bg-gptMidnightBlue hover:text-white group flex items-center text-sm font-medium w-full space-x-2 justify-between overflow-hidden min-h-[50px]`}
       role='button'
       tabIndex={0}
       aria-disabled='false'
@@ -65,12 +69,12 @@ export const Folder: React.FC<Props> = ({
             <div className='ml-1 whitespace-nowrap opacity-50'>
               ({chatsQuantity} chats)
             </div>
-            <div className='truncate w-full min-w-0'>{ElementTitle()}</div>
+            <div className='w-full min-w-0'>{ElementTitle()}</div>
           </div>
         </div>
       </button>
 
-      {RenderInputActions()}
+      {RenderButtonsActions()}
     </div>
   )
 }

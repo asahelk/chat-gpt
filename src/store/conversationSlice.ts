@@ -18,6 +18,9 @@ export interface ConversationState {
   addNewConversation: (conversation: Conversation) => void
   updateConversation: (conversation: ConversationWithId) => void
   updateConversationsList: (conversationsList: ConversationWithId[]) => void
+  updatePartialConversationsList: (
+    conversationsList: ConversationWithId[]
+  ) => void
   clearConversations: () => void
   selectConversation: ({ id }: { id: Id }) => void
   sendPrompt: ({ prompt }: { prompt: string }) => void
@@ -84,6 +87,15 @@ export const createConversationSlice: StateCreator<
     set((state) => {
       return {
         conversationsList: conversationsList
+      }
+    })
+  },
+  updatePartialConversationsList: (conversationsList) => {
+    set((state) => {
+      return {
+        conversationsList: conversationsList
+          .concat(state.conversationsList)
+          .filter((v, i, a) => a.findIndex((e) => e.id === v.id) === i)
       }
     })
   },
