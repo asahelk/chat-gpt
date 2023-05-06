@@ -71,8 +71,6 @@ export const SideNav: React.FC<Props> = ({ className }) => {
                   >
                     <TreeSideNav />
                   </DndProvider>
-                  {/* <FolderList />
-                  <ConversationList /> */}
                 </div>
               </div>
             </nav>

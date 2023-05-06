@@ -1,7 +1,6 @@
 import { Aside } from '@/components/Aside'
 import { ChatForm } from '@/components/CreatePrompt'
 import { Header } from '@/components/Header'
-import Providers from '@/utils/provider'
 import '../styles/globals.css'
 
 type Props = {
@@ -20,19 +19,19 @@ const RootLayout: React.FC<Props> = ({ children }) => {
         <title>Chat GPT</title>
       </head>
       <body>
-        <Providers>
-          <div className='relative w-full flex h-screen bg-gptgray'>
-            <Aside />
+        {/* <Providers> */}
+        <div className='relative w-full flex h-screen bg-gptgray'>
+          <Aside />
 
-            <div className={`flex flex-col w-full h-full`}>
-              <main className='overflow-hidden flex flex-col relative h-full w-full'>
-                <Header />
-                {children}
-                <ChatForm />
-              </main>
-            </div>
+          <div className={`flex flex-col w-full h-full`}>
+            <main className='overflow-hidden flex flex-col relative h-full w-full'>
+              <Header />
+              {children}
+              <ChatForm />
+            </main>
           </div>
-        </Providers>
+        </div>
+        {/* </Providers> */}
       </body>
     </html>
   )

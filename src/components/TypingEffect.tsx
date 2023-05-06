@@ -1,53 +1,23 @@
 import hljs from 'highlight.js'
 import 'highlight.js/styles/atom-one-dark.css'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 
-const useTypingEffect = ({ text }: { text: string }) => {
-  const [displayText, setDisplayText] = useState('')
-  const [currentIndex, setCurrentIndex] = useState(0) // podríamos usar un useRef
-  const [showCursor, setShowCursor] = useState(true)
-
-  useEffect(() => {
-    hljs.highlightAll()
-  }, [displayText])
-
-  useEffect(() => {
-    if (!text?.length) return
-
-    const intervalId = setInterval(() => {
-      if (currentIndex >= text.length) {
-        clearInterval(intervalId)
-        setShowCursor(false)
-        return
-      }
-
-      const nextIndex = text.indexOf(' ', currentIndex + 1)
-      if (nextIndex < 0) {
-        // ha llegado al final
-        setDisplayText(text)
-        setCurrentIndex(text.length)
-        return
-      }
-
-      setDisplayText(text.slice(0, nextIndex))
-      setCurrentIndex(currentIndex + 1)
-    }, 1)
-
-    return () => clearInterval(intervalId)
-  }, [text, currentIndex])
-
-  return { displayText, showCursor }
+interface Props {
+  text: string
+  isFinished: boolean
 }
 
-export function TypingEffect({ text }: { text: string }) {
-  const { displayText, showCursor } = useTypingEffect({ text })
+export function TypingEffect({ text, isFinished }: Props) {
+  useEffect(() => {
+    hljs.highlightAll()
+  }, [text, isFinished])
 
   return (
     <span
       className={`${
-        showCursor ? 'after:content-["▋"] after:ml-1 after:animate-typing' : ''
+        !isFinished ? 'after:content-["▋"] after:ml-1 after:animate-typing' : ''
       }`}
-      dangerouslySetInnerHTML={{ __html: displayText }}
+      dangerouslySetInnerHTML={{ __html: text }}
     />
   )
 }

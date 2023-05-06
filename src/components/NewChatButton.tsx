@@ -1,17 +1,22 @@
+import { useRouter } from 'next/navigation'
+
 import { useStore } from '@/store/boundStore'
-import { defaultConversationInit } from '@/utils/initObjects'
 import { PlusIcon } from './Icons'
 
 export function NewChatButton() {
-  const addNewConversation = useStore((state) => state.addNewConversation)
+  const router = useRouter()
 
-  const newConversation = defaultConversationInit
+  const setConversation = useStore((state) => state.setConversation)
+
+  const handleClick = () => {
+    setConversation({ id: null })
+
+    router.push('/chat')
+  }
 
   return (
     <button
-      onClick={() =>
-        addNewConversation(newConversation)
-      }
+      onClick={handleClick}
       className='text-white group flex items-center rounded-md px-4 h-10 gap-2 text-sm font-medium w-full transition-all hover:bg-gray-500/30 border-white/20 border'
     >
       <PlusIcon />

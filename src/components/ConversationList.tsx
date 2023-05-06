@@ -1,4 +1,5 @@
 import { useStore } from '@/store/boundStore'
+import { useEffect, useState } from 'react'
 import { Conversation } from './Conversation'
 
 interface Props {
@@ -6,18 +7,19 @@ interface Props {
 }
 
 export const ConversationList: React.FC<Props> = ({ isFavoriteList }) => {
+  const [isHydrated, setIsHydrated] = useState(false)
+
+  useEffect(() => {
+    setIsHydrated(true)
+  }, [])
+
   let conversationsList = useStore((state) => state.conversationsList)
 
-  // let conversationList = []
-
-  // if (conversationsInfo) {
-  // conversationList = Object.entries(conversationsInfo).map(
-  //   ([_, item]) => item
-  // )
   conversationsList = isFavoriteList
     ? conversationsList.filter((e) => e.isFavorite)
     : conversationsList
-  // }
+
+  if (!isHydrated) return <></>
 
   const Element = conversationsList.map((conversation) => {
     return (

@@ -2,19 +2,40 @@ import { Avatar } from '@/components/Avatar'
 import { ChatGPTLogo } from '@/components/Icons'
 import { TypingEffect } from '@/components/TypingEffect'
 import { UserAvatar } from '@/components/UserAvatar'
+import { Id, Message as MessageType } from '@/type'
+import 'highlight.js/styles/atom-one-dark.css'
+import { useEffect, useState } from 'react'
 import snarkdown from 'snarkdown'
 import { ErrorMessage } from './ErrorMessage'
 
-interface Props {
+export interface Props {
+  id: Id
   isAI: boolean
   content: string
   error?: boolean | null
+  isFinished: boolean
+  message: MessageType
 }
 
-export const Message: React.FC<Props> = ({ isAI, content, error }) => {
+export const Message: React.FC<Props> = ({
+  id,
+  isAI,
+  content,
+  error,
+  isFinished,
+  message
+}) => {
+  const [isHydrated, setIsHydrated] = useState(false)
+
+  useEffect(() => {
+    setIsHydrated(true)
+  }, [])
+
+  if (!isHydrated) return <></>
+
   const avatar = isAI ? <ChatGPTLogo /> : <UserAvatar />
   const textElement = isAI ? (
-    <TypingEffect text={snarkdown(content)} />
+    <TypingEffect text={snarkdown(content)} isFinished={isFinished} />
   ) : (
     <div
       dangerouslySetInnerHTML={{

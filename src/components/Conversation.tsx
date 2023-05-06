@@ -2,6 +2,9 @@ import { useChatComponent } from '@/app/hooks/useChatComponent'
 import { CHAT_TYPES } from '@/constants'
 import { useStore } from '@/store/boundStore'
 import { ConversationWithId } from '@/type'
+import Link from 'next/link'
+import { useParams, useRouter } from 'next/navigation'
+
 import { MessageFavIcon, StarIcon } from './Icons'
 
 interface Props {
@@ -18,23 +21,37 @@ export const Conversation: React.FC<Props> = ({
 }) => {
   const { background = '', bggradient = '' } = inputProps
 
+  const { replace } = useRouter()
+
+  const params = useParams()
+
   const removeConversation = useStore((state) => state.removeConversation)
 
   const updateConversation = useStore((state) => state.updateConversation)
+
+  const handleRemoveConversation = () => {
+    const id = params?.id
+
+    if (id && id === conversation.id) replace('/chat')
+
+    removeConversation({ id: conversation.id })
+  }
 
   const { RenderButtonsActions, ElementTitle } =
     useChatComponent<ConversationWithId>({
       id: conversation.id,
       title: conversation.text,
       className: bggradient || '',
+      previewLastMessage: conversation.previewLastMessage || '',
       type: CHAT_TYPES.CHAT,
       callbackOnSubmit: (conversation) => updateConversation(conversation),
-      removeCallback: removeConversation
+      removeCallback: handleRemoveConversation
     })
 
-  const selectConversation = useStore((state) => state.selectConversation)
+  const setConversation = useStore((state) => state.setConversation)
 
-  function handleFavorite() {
+  function handleFavorite(event: React.MouseEvent<HTMLButtonElement>) {
+    event.preventDefault()
     updateConversation({
       ...conversation,
       isFavorite: !conversation.isFavorite
@@ -42,9 +59,12 @@ export const Conversation: React.FC<Props> = ({
   }
 
   return (
-    <div
+    <Link
+      href={`/chat/${conversation.id}`}
       {...inputProps}
-      onClick={() => selectConversation({ id: conversation.id })}
+      prefetch={false}
+      draggable={false}
+      // onClick={() => selectConversation({ id: conversation.id })}
       className={`${background} focus-within:bg-gptCharcoalGray relative flex items-center gap-3 pl-3 py-3 break-all cursor-pointer group hover:bg-gptMidnightBlue min-h-[50px]`}
     >
       <MessageFavIcon
@@ -68,6 +88,6 @@ export const Conversation: React.FC<Props> = ({
       </button>
       {ElementTitle()}
       {RenderButtonsActions()}
-    </div>
+    </Link>
   )
 }

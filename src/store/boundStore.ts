@@ -46,6 +46,13 @@ export const useStore = create<StoreState>()(
           }
         }
       }
+      // partialize: (state) =>
+      //   Object.fromEntries(
+      //     Object.entries(state).filter(
+      //       ([key]) =>
+      //         !['selectedConversation', 'selectedConversationId'].includes(key)
+      //     )
+      //   )
     })
   )
 )

@@ -12,7 +12,7 @@ export const defaultConversationInit: Conversation = {
   createdAt: new Date().toString(),
   updatedAt: null,
   syncedAt: null,
-  preview: 'New Conversation',
+  previewLastMessage: '-',
   isFavorite: false,
   order: -1,
   chatType: CHAT_TYPES.CHAT,

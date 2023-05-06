@@ -1,4 +1,4 @@
-import { decompress } from 'lz-ts'
+import { Message } from '@/type'
 import { NextApiRequest, NextApiResponse } from 'next'
 
 const { OPENAI_API_KEY } = process.env
@@ -28,32 +28,39 @@ export default async function handler(
     return res.status(400).json({ error: 'Prompt is required' })
   }
 
+  console.log('EL PROMPT', prompt)
+  console.log('-------')
+
   let previousConversation: { role: string; content: string }[] = []
   try {
-    const decompressedConversation = decompress(conversation)
-    let parsedConversation: { ia: boolean; message: string }[] = []
+    const decompressedConversation = conversation
+    let parsedConversation: Message[] = []
     try {
       parsedConversation = JSON.parse(decompressedConversation)
     } catch (e) {
       console.error('Problems parsing', decompressedConversation)
+      console.error('El Parse error -> ', e)
       return res.status(400).json({ error: 'Error parsing' })
     }
 
     previousConversation = parsedConversation
       .map((entry) => {
-        const role = entry.ia ? 'assistant' : 'user'
+        const role = entry.isAI ? 'assistant' : 'user'
 
         // ignore messages without content
-        if (!entry.message) return null
+        if (!entry.content) return null
 
         return {
           role,
-          content: entry.message
+          content: entry.content
         }
       })
       .filter((entry) => entry !== null) as { role: string; content: string }[]
+    console.log('EL conversation', decompressedConversation)
   } catch (error) {
+    console.error('Error decompressing -> ', conversation)
     console.error(error)
+    return res.status(400).json({ error: 'Error decompressing' })
   }
 
   const messages = [INITIAL_ROLE_MESSAGE, ...previousConversation]
@@ -80,7 +87,7 @@ export default async function handler(
     res.writeHead(200, {
       'Access-Control-Allow-Origin': '*',
       Connection: 'keep-alive',
-      'Content-Encoding': 'none',
+      'Content-Encoding': 'gzip',
       'Cache-Control': 'no-cache, no-transform',
       'Content-Type': 'text/event-stream; charset=utf-8'
     })

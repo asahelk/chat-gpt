@@ -26,12 +26,13 @@ export interface Conversation {
   droppable: boolean
   messages: Message[]
   model: string
+  previewLastMessage: string
   systemMessage: string
   character?: Character | null
   createdAt: string
   updatedAt?: string | null
   syncedAt?: string | null
-  preview: string
+  // preview: string
   isFavorite: boolean
   order: number
   chatType: CHAT_TYPES
@@ -53,14 +54,15 @@ export interface Character {
 }
 
 export interface Message {
-  id: string
+  id: Id
   role: string
   content: string
   usage?: Usage | null
-  // finish: any
+  isFinished: boolean
   isAI: boolean
   model?: string | null
   error?: boolean | null
+  // conversationId: Id
 }
 
 export interface Usage {

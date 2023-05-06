@@ -6,13 +6,13 @@ import {
 } from '@/type'
 
 import { defaultConversationInit } from '@/utils/initObjects'
-import { compress } from 'lz-ts'
 import { StateCreator } from 'zustand'
 import { StoreState } from './boundStore'
 
 export interface ConversationState {
   loading: boolean
   conversationsList: ConversationWithId[]
+  selectedConversation?: ConversationWithId | null
   selectedConversationId?: Id | null
   removeConversation: ({ id }: { id: Id }) => void
   addNewConversation: (conversation: Conversation) => void
@@ -22,8 +22,8 @@ export interface ConversationState {
     conversationsList: ConversationWithId[]
   ) => void
   clearConversations: () => void
-  selectConversation: ({ id }: { id: Id }) => void
-  sendPrompt: ({ prompt }: { prompt: string }) => void
+  setConversation: ({ id }: { id: Id | null }) => void
+  sendPrompt: ({ prompt }: { prompt: string }) => Promise<Id>
 }
 
 export const createConversationSlice: StateCreator<
@@ -35,8 +35,13 @@ export const createConversationSlice: StateCreator<
   loading: false,
   conversationsList: [],
   selectedConversationId: null,
-  selectConversation: ({ id }: { id: Id }) => {
-    set(() => ({ selectedConversationId: id }))
+  selectedConversation: null,
+  setConversation: ({ id }: { id: Id | null }) => {
+    const conversation = get().conversationsList.find((e) => e.id === id)
+    set(() => ({
+      selectedConversationId: id,
+      selectedConversation: conversation
+    }))
   },
   clearConversations: () => {
     set(() => ({
@@ -49,7 +54,12 @@ export const createConversationSlice: StateCreator<
     const newSelectedConversationId =
       get().selectedConversationId === id ? null : get().selectedConversationId
 
+    const newSelectedConversation =
+      get().selectedConversation?.id === id ? null : get().selectedConversation
+
     set((state) => ({
+      selectedConversation: newSelectedConversation,
+      selectedConversationId: newSelectedConversation?.id,
       conversationsList: state.conversationsList.filter(
         (conversation: ConversationWithId) => conversation.id !== id
       )
@@ -100,10 +110,12 @@ export const createConversationSlice: StateCreator<
     })
   },
   sendPrompt: async ({ prompt }) => {
-    // let selectedConversationId = get().selectedConversationId
-    let selectedConversation = get().conversationsList.find(
+    let selectedConversationIndex = get().conversationsList.findIndex(
       (elem) => elem.id === get().selectedConversationId
     )
+
+    let selectedConversation =
+      get().conversationsList[selectedConversationIndex]
 
     const userMessageID = crypto.randomUUID()
     const IAMessageID = crypto.randomUUID()
@@ -112,21 +124,25 @@ export const createConversationSlice: StateCreator<
       {
         id: userMessageID,
         role: 'User',
+        isFinished: true,
         isAI: false,
         content: prompt
       },
       {
         id: IAMessageID,
         role: 'System',
+        isFinished: false,
         isAI: true,
         content: ''
       }
     ]
 
-    let fullConversation = partialNewConversationMessages
+    let fullChatMessages = partialNewConversationMessages
 
-    if (selectedConversation === null && selectedConversation === undefined) {
+    if (!selectedConversation) {
       let uuID = crypto.randomUUID() as Id
+
+      selectedConversationIndex = get().conversationsList.length
 
       const newConversation: ConversationWithId = {
         ...defaultConversationInit,
@@ -134,38 +150,29 @@ export const createConversationSlice: StateCreator<
         messages: partialNewConversationMessages
       }
 
+      selectedConversation = newConversation
+
       set((state) => ({
         loading: true,
-        selectedConversationId: uuID,
+        selectedConversation,
+        // selectedConversationId: uuID,
         conversationsList: [...state.conversationsList, newConversation]
       }))
     } else {
-      let selectedConversationIndex = get().conversationsList.findIndex(
-        (elem) => elem.id === get().selectedConversationId
-      )
+      fullChatMessages = [
+        ...selectedConversation.messages,
+        ...partialNewConversationMessages
+      ]
 
-      set((state) => {
-        fullConversation = [
-          ...(state.conversationsList[selectedConversationIndex]
-            .messages as Message[]),
-          ...partialNewConversationMessages
-        ]
+      selectedConversation.messages = fullChatMessages
 
-        if (selectedConversation != null || selectedConversation != undefined) {
-          selectedConversation.messages = fullConversation
-        }
-
-        return {
-          loading: true,
-          conversationsList: [
-            ...state.conversationsList,
-            selectedConversation as ConversationWithId
-          ]
-        }
-      })
+      set((state) => ({
+        loading: true,
+        conversationsList: [...state.conversationsList]
+      }))
     }
 
-    const compressedConversation = compress(JSON.stringify(fullConversation))
+    const compressedConversation = JSON.stringify(fullChatMessages)
 
     try {
       const eventSource = new EventSource(
@@ -173,73 +180,95 @@ export const createConversationSlice: StateCreator<
       )
       let message = ''
 
-      eventSource.onerror = () => {
-        set((state) => {
-          if (
-            selectedConversation !== null ||
-            selectedConversation !== undefined
-          ) {
-            selectedConversation = selectedConversation as ConversationWithId
-            if (
-              selectedConversation.messages == null ||
-              selectedConversation.messages == undefined
-            )
-              return {}
+      eventSource.onerror = (e) => {
+        console.log('el error', e)
 
-            const lastMessage = selectedConversation?.messages.length - 1
-            selectedConversation.messages[lastMessage].error = true
-            selectedConversation.messages[lastMessage].content = message
+        set((state) => {
+          if (selectedConversation) {
+            selectedConversation.messages = selectedConversation.messages.map(
+              (entry) => {
+                if (entry.id === IAMessageID) {
+                  return {
+                    ...entry,
+                    error: true,
+                    content: message
+                  }
+                }
+                return entry
+              }
+            )
           }
+
+          state.conversationsList[selectedConversationIndex].messages = [
+            ...selectedConversation.messages
+          ]
 
           return {
             loading: false,
-            conversationsList: [
-              ...state.conversationsList,
-              selectedConversation as ConversationWithId
-            ]
+            selectedConversation: structuredClone(selectedConversation),
+            selectedConversationId: selectedConversation.id,
+            conversationsList: [...state.conversationsList]
           }
         })
       }
 
       eventSource.onmessage = (event) => {
-        if (event.data === '[DONE]') {
+        const lastMessage = selectedConversation.messages.find(
+          (e) => e.id === IAMessageID
+        )
+
+        if (!lastMessage) {
           set(() => ({ loading: false }))
 
           eventSource.close()
           return
         }
 
+        if (event.data === '[DONE]') {
+          lastMessage.isFinished = true
+
+          set((state) => {
+            state.conversationsList[selectedConversationIndex] =
+              structuredClone(selectedConversation)
+
+            return {
+              loading: false,
+              selectedConversation: structuredClone(selectedConversation),
+              selectedConversationId: selectedConversation.id,
+              conversationsList: [...state.conversationsList]
+            }
+          })
+
+          eventSource.close()
+          return
+        }
+
         message += JSON.parse(event.data)
+        lastMessage.content = message
 
-        // Actualizar el mensaje de la IA
-        // que tenía el mensaje vacio,
-        // con el texto completo
+        selectedConversation.previewLastMessage = message
+          .trim()
+          .substring(0, 50)
+
         set((state) => {
-          if (
-            selectedConversation !== null ||
-            selectedConversation !== undefined
-          ) {
-            selectedConversation = selectedConversation as ConversationWithId
-            if (
-              selectedConversation.messages == null ||
-              selectedConversation.messages == undefined
-            )
-              return {}
-
-            const lastMessage = selectedConversation.messages.length - 1
-            selectedConversation.messages[lastMessage].content = message
-          }
+          state.conversationsList[selectedConversationIndex] =
+            structuredClone(selectedConversation)
 
           return {
-            conversationsList: [
-              ...state.conversationsList,
-              selectedConversation as ConversationWithId
-            ]
+            loading: true,
+            selectedConversation: structuredClone(selectedConversation),
+            selectedConversationId: selectedConversation.id,
+            conversationsList: [...state.conversationsList]
           }
         })
       }
     } catch (error) {
       console.error(error)
+    } finally {
+      set(() => ({
+        loading: false
+      }))
     }
+    return selectedConversation.id
   }
 })

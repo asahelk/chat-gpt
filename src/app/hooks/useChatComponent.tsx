@@ -10,6 +10,7 @@ type ChatComponent<T> = {
   title: string
   type: keyof typeof CHAT_TYPES
   className: string
+  previewLastMessage: string
   callbackOnSubmit: (object: T) => void
   removeCallback: ({ id }: { id: Id }) => void
 }
@@ -19,6 +20,7 @@ export function useChatComponent<T>({
   title,
   className,
   type,
+  previewLastMessage,
   callbackOnSubmit,
   removeCallback
 }: ChatComponent<T>) {
@@ -41,7 +43,8 @@ export function useChatComponent<T>({
     }
   }, [currentStatus === ACTION_STATUS.IS_EDITING])
 
-  const onHandleRemove = () => {
+  const onHandleRemove = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event?.preventDefault()
     if (removeCallback) {
       removeCallback({ id })
 
@@ -98,14 +101,20 @@ export function useChatComponent<T>({
     [ACTION_STATUS.NORMAL]: (
       <>
         <button
-          onClick={() => setCurrentStatus(ACTION_STATUS.IS_EDITING)}
+          onClick={(e) => {
+            e.preventDefault()
+            setCurrentStatus(ACTION_STATUS.IS_EDITING)
+          }}
           className='text-gray-500 hover:text-white transiton-all'
         >
           <PencilIcon />
         </button>
         <button
           className='text-gray-500 hover:text-white transiton-all'
-          onClick={() => setCurrentStatus(ACTION_STATUS.IS_REMOVING)}
+          onClick={(e) => {
+            e.preventDefault()
+            setCurrentStatus(ACTION_STATUS.IS_REMOVING)
+          }}
         >
           <TrashIcon />
         </button>
@@ -121,7 +130,10 @@ export function useChatComponent<T>({
         </button>
         <button
           className='text-gray-500 hover:text-white transiton-all'
-          onClick={() => setCurrentStatus(ACTION_STATUS.NORMAL)}
+          onClick={(e) => {
+            e.preventDefault()
+            setCurrentStatus(ACTION_STATUS.NORMAL)
+          }}
         >
           <CloseIcon />
         </button>
@@ -137,7 +149,10 @@ export function useChatComponent<T>({
         </button>
         <button
           className='text-gray-500 hover:text-white transiton-all'
-          onClick={() => setCurrentStatus(ACTION_STATUS.NORMAL)}
+          onClick={(e) => {
+            e.preventDefault()
+            setCurrentStatus(ACTION_STATUS.NORMAL)
+          }}
         >
           <CloseIcon />
         </button>
@@ -151,7 +166,7 @@ export function useChatComponent<T>({
         <form
           onSubmit={handleSubmit}
           onKeyDown={handleKeyDown}
-          className='w-full flex items-center'
+          className='w-full flex flex-1 flex-col gap-y-1'
         >
           <textarea
             onKeyUp={(e) => e.preventDefault()}
@@ -164,13 +179,20 @@ export function useChatComponent<T>({
             defaultValue={title}
             className='text-white rounded-sm px-0 py-0 focus:ring-blue-500 focus:ring-1 sm:text-sm w-full text-base border-0 outline-none '
           />
+          <span className='font-extralight text-xs text-gray-400'>
+            {previewLastMessage}
+          </span>
         </form>
       )
     }
 
     return (
-      <div className='relative flex-1 overflow-hidden break-all text-ellipsis max-h-5 w-full'>
-        {title}
+      <div className='relative flex flex-1 flex-col overflow-hidden break-all text-ellipsis min-h-[20px] w-full'>
+        <span className='truncate'>{title}</span>
+        <span className='font-extralight text-xs truncate text-gray-400'>
+          {previewLastMessage}
+        </span>
+
         <div
           className={`${className} absolute inset-y-0 right-0 w-8 z-10 bg-gradient-to-l group-focus-within:from-gptCharcoalGray from-gptdarkgray group-hover:from-gptMidnightBlue`}
           data-gradient='true'

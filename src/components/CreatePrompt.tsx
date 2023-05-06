@@ -3,6 +3,7 @@
 import { SendIcon } from '@/components/Icons'
 import { useStore } from '@/store/boundStore'
 import { autoHeightOnTyping } from '@/utils/helper'
+import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 
 const loadingStates = [
@@ -40,14 +41,17 @@ export function ChatForm() {
   const sendPrompt = useStore((state) => state.sendPrompt)
   const isLoading = useStore((state) => state.loading)
   const textAreaRef = useRef<HTMLTextAreaElement>(null)
+  const { push } = useRouter()
 
-  const handleSubmit = (event?: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event?: React.FormEvent<HTMLFormElement>) => {
     event?.preventDefault()
     if (isLoading) return
 
     const element = textAreaRef.current as HTMLTextAreaElement
     const { value } = element
-    sendPrompt({ prompt: value })
+    const id = await sendPrompt({ prompt: value }) //Instead waiting for, could call the selectedConversationId
+
+    push(`/chat/${id}`)
     element.value = ''
   }
 
@@ -78,7 +82,6 @@ export function ChatForm() {
       >
         <div className='relative flex flex-col flex-grow w-full px-4 py-3 text-white border rounded-md shadow-lg bg-gptlightgray border-gray-900/50'>
           <textarea
-            disabled={isLoading}
             onChange={handleChange}
             ref={textAreaRef}
             rows={1}
