@@ -24,6 +24,7 @@ export interface ConversationState {
   clearConversations: () => void
   setConversation: ({ id }: { id: Id | null }) => void
   sendPrompt: ({ prompt }: { prompt: string }) => Promise<Id>
+  removeContiguousMessages: ({ id }: { id: Id }) => void
 }
 
 export const createConversationSlice: StateCreator<
@@ -65,6 +66,35 @@ export const createConversationSlice: StateCreator<
       )
     }))
   },
+  removeContiguousMessages: ({ id }: { id: Id }) => {
+    const userMessageIndex = get().selectedConversation?.messages.findIndex(
+      (e) => e.id === id
+    )
+
+    const selectedConversationIndex = get().conversationsList.findIndex(
+      (e) => e.id === get().selectedConversationId
+    )
+
+    set((state) => {
+      if (!state.selectedConversation) return {}
+
+      //@ts-ignore
+      const messages = state.selectedConversation.messages.toSpliced(
+        userMessageIndex,
+        2
+      )
+
+      state.selectedConversation.messages = messages
+
+      state.conversationsList[selectedConversationIndex] = structuredClone(
+        state.selectedConversation
+      )
+      return {
+        selectedConversation: structuredClone(state.selectedConversation),
+        conversationsList: [...state.conversationsList]
+      }
+    })
+  },
   addNewConversation: (conversation) => {
     const uuID = crypto.randomUUID() as Id
 
@@ -88,8 +118,19 @@ export const createConversationSlice: StateCreator<
         ...conversation
       }
 
+      const selectedConversation = get().selectedConversation
+      if (selectedConversation && selectedConversation.id === conversation.id) {
+        state.selectedConversation = {
+          ...state.selectedConversation,
+          ...conversation
+        }
+      }
+
       return {
-        conversationsList: [...state.conversationsList]
+        conversationsList: [...state.conversationsList],
+        selectedConversation: {
+          ...state.selectedConversation
+        } as ConversationWithId
       }
     })
   },
@@ -248,7 +289,8 @@ export const createConversationSlice: StateCreator<
 
         selectedConversation.previewLastMessage = message
           .trim()
-          .substring(0, 50)
+          .substring(0, 42)
+          .trim()
 
         set((state) => {
           state.conversationsList[selectedConversationIndex] =

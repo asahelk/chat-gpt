@@ -2,6 +2,25 @@ type ClassName = {
   className?: string
 }
 
+export function ClipboardIcon({ className = 'w-4 h-4' }: ClassName) {
+  return (
+    <svg
+      xmlns='http://www.w3.org/2000/svg'
+      width='1em'
+      height='1em'
+      fill='none'
+      stroke='currentColor'
+      strokeLinecap='round'
+      strokeLinejoin='round'
+      className={className}
+      strokeWidth='2'
+      viewBox='0 0 24 24'
+    >
+      <path d='M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2'></path>
+      <rect width='8' height='4' x='8' y='2' rx='1' ry='1'></rect>
+    </svg>
+  )
+}
 export function SendIcon() {
   return (
     <svg

@@ -78,6 +78,7 @@ export function useChatComponent<T>({
 
   const handleSubmit = (event?: React.FormEvent<HTMLFormElement>) => {
     event?.preventDefault()
+    event?.stopPropagation()
     setCurrentStatus(ACTION_STATUS.NORMAL)
 
     const value = textAreaRef.current?.value || ''
@@ -123,7 +124,10 @@ export function useChatComponent<T>({
     [ACTION_STATUS.IS_EDITING]: (
       <>
         <button
-          onClick={() => handleSubmit()}
+          onClick={(event) => {
+            event.preventDefault()
+            handleSubmit()
+          }}
           className='text-gray-500 hover:text-white transiton-all'
         >
           <CheckIcon />
@@ -166,7 +170,7 @@ export function useChatComponent<T>({
         <form
           onSubmit={handleSubmit}
           onKeyDown={handleKeyDown}
-          className='w-full flex flex-1 flex-col gap-y-1'
+          className='w-full flex flex-1 flex-col '
         >
           <textarea
             onKeyUp={(e) => e.preventDefault()}
@@ -179,9 +183,12 @@ export function useChatComponent<T>({
             defaultValue={title}
             className='text-white rounded-sm px-0 py-0 focus:ring-blue-500 focus:ring-1 sm:text-sm w-full text-base border-0 outline-none '
           />
-          <span className='font-extralight text-xs text-gray-400'>
-            {previewLastMessage}
-          </span>
+          <span
+            dangerouslySetInnerHTML={{
+              __html: previewLastMessage
+            }}
+            className='font-extralight text-xs text-gray-400'
+          />
         </form>
       )
     }
@@ -189,9 +196,12 @@ export function useChatComponent<T>({
     return (
       <div className='relative flex flex-1 flex-col overflow-hidden break-all text-ellipsis min-h-[20px] w-full'>
         <span className='truncate'>{title}</span>
-        <span className='font-extralight text-xs truncate text-gray-400'>
-          {previewLastMessage}
-        </span>
+        <span
+          dangerouslySetInnerHTML={{
+            __html: previewLastMessage
+          }}
+          className='font-extralight text-xs truncate text-gray-400'
+        />
 
         <div
           className={`${className} absolute inset-y-0 right-0 w-8 z-10 bg-gradient-to-l group-focus-within:from-gptCharcoalGray from-gptdarkgray group-hover:from-gptMidnightBlue`}

@@ -74,7 +74,7 @@ export function ChatForm() {
   }, [])
 
   return (
-    <section className='sticky bottom-0 left-0 right-0 w-full px-2 border-t md:border-t-0 dark:border-white/20 md:border-transparent bg-gradient'>
+    <section className='absolute bottom-0 left-0 w-full border-transparent bg-gradient-to-b from-transparent via-white to-white pt-6 dark:border-white/20 dark:via-[#343541] dark:to-[#343541] md:pt-16'>
       <form
         onSubmit={handleSubmit}
         onKeyDown={handleKeyDown}
