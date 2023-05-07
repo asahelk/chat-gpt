@@ -1,5 +1,28 @@
 type ClassName = {
   className?: string
+  fill?: string
+}
+
+export function FilledArrowIcon({
+  className = 'w-4 h-4',
+  fill = 'none'
+}: ClassName) {
+  return (
+    <svg
+      xmlns='http://www.w3.org/2000/svg'
+      width='1em'
+      height='1em'
+      fill={fill}
+      stroke='currentColor'
+      strokeLinecap='round'
+      strokeLinejoin='round'
+      strokeWidth='1.5'
+      className={className}
+      viewBox='0 0 24 24'
+    >
+      <path d='M9 18L15 12 9 6'></path>
+    </svg>
+  )
 }
 
 export function ClipboardIcon({ className = 'w-4 h-4' }: ClassName) {

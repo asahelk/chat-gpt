@@ -81,7 +81,7 @@ export const SideNav: React.FC<Props> = ({ className }) => {
               className='flex items-center gap-3 px-3 py-3 text-sm text-white transition-colors duration-200 rounded-md cursor-pointer hover:bg-gray-500/10'
             >
               <TrashIcon />
-              Clear conversations
+              Clear all conversations
             </button>
           </div>
         </div>

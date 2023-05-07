@@ -34,7 +34,8 @@ export const Folder: React.FC<Props> = ({
       className: bggradient,
       type: CHAT_TYPES.FOLDER,
       callbackOnSubmit: (folder) => updateFolder(folder),
-      removeCallback: removeFolder
+      removeCallback: removeFolder,
+      previewLastMessage: ''
     }
   )
 

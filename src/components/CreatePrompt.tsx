@@ -82,6 +82,7 @@ export function ChatForm() {
       >
         <div className='relative flex flex-col flex-grow w-full px-4 py-3 text-white border rounded-md shadow-lg bg-gptlightgray border-gray-900/50'>
           <textarea
+            id='mainInput'
             onChange={handleChange}
             ref={textAreaRef}
             rows={1}

@@ -12,6 +12,7 @@ export function NewChatButton() {
     setConversation({ id: null })
 
     router.push('/chat')
+    document.getElementById('mainInput')?.focus()
   }
 
   return (

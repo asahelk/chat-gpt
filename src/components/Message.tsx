@@ -1,37 +1,30 @@
 import { Avatar } from '@/components/Avatar'
 import {
   ChatGPTLogo,
+  CheckIcon,
   ClipboardIcon,
+  FilledArrowIcon,
   PencilIcon,
   TrashIcon
 } from '@/components/Icons'
 import { TypingEffect } from '@/components/TypingEffect'
 import { UserAvatar } from '@/components/UserAvatar'
 import { useStore } from '@/store/boundStore'
-import { Id, Message as MessageType } from '@/type'
+import { Message as MessageType } from '@/type'
 import 'highlight.js/styles/atom-one-dark.css'
 import { useEffect, useState } from 'react'
 import snarkdown from 'snarkdown'
 import { ErrorMessage } from './ErrorMessage'
 
 export interface Props {
-  id: Id
-  isAI: boolean
-  content: string
-  error?: boolean | null
-  isFinished: boolean
   message: MessageType
 }
 
-export const Message: React.FC<Props> = ({
-  id,
-  isAI,
-  content,
-  error,
-  isFinished,
-  message
-}) => {
+export const Message: React.FC<Props> = ({ message }) => {
+  const { id, isAI, content, error, isFinished } = message
+
   const [isHydrated, setIsHydrated] = useState(false)
+  const [isMessagedCopied, setIsMessageCopied] = useState(false)
 
   useEffect(() => {
     setIsHydrated(true)
@@ -63,18 +56,32 @@ export const Message: React.FC<Props> = ({
     return textElement
   }
 
+  const copyOnClick = () => {
+    if (!navigator.clipboard) return
+
+    navigator.clipboard.writeText(message.content).then(() => {
+      setIsMessageCopied(true)
+      setTimeout(() => {
+        setIsMessageCopied(false)
+      }, 2000)
+    })
+  }
+
   const renderIconButtonActions = () => {
-    if (isAI)
+    if (isAI) {
+      if (isMessagedCopied) {
+        return <CheckIcon />
+      }
       return (
         <button
-          onClick={(e) => {
-            e.preventDefault()
-          }}
+          onClick={copyOnClick}
           className='text-gray-400 hover:text-white transiton-all invisible group-hover:visible focus:visible dark:text-gray-400 dark:hover:text-gray-300'
         >
           <ClipboardIcon />
         </button>
       )
+    }
+
     return (
       <>
         <button
@@ -102,7 +109,21 @@ export const Message: React.FC<Props> = ({
       }`}
     >
       <article className='flex max-w-3xl gap-4 p-6 m-auto '>
-        <Avatar>{avatar}</Avatar>
+        <div className='flex-shrink-0 flex flex-col relative items-end'>
+          <Avatar>{avatar}</Avatar>
+          <div className='text-xs flex items-center justify-center gap-1 absolute left-0 top-2 -ml-4 -translate-x-full group-hover:visible visible'>
+            <button className='dark:text-white disabled:text-gray-300 dark:disabled:text-gray-400'>
+              <FilledArrowIcon
+                className='h-3 w-3 rotate-180'
+                fill='currentColor'
+              />
+            </button>
+            <span className='flex-grow flex-shrink-0'>2 / 2</span>
+            <button className='dark:text-white disabled:text-gray-300 dark:disabled:text-gray-400'>
+              <FilledArrowIcon className='h-3 w-3' fill='currentColor' />
+            </button>
+          </div>
+        </div>
         <div className='min-h-[20px] flex flex-1 items-start gap-4 whitespace-pre-wrap'>
           <div className='w-full break-words prose-invert'>
             {renderContent()}
