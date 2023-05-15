@@ -204,6 +204,12 @@ export const Message: React.FC<Props> = ({
           <PencilIcon />
         </button>
         <button
+          onClick={copyOnClick}
+          className='text-gray-400 hover:text-white transiton-all invisible group-hover:visible focus:visible dark:text-gray-400 dark:hover:text-gray-300'
+        >
+          <ClipboardIcon />
+        </button>
+        <button
           className='text-gray-400 hover:text-white transiton-all invisible group-hover:visible focus:visible dark:text-gray-400 dark:hover:text-gray-300'
           onClick={handleRemoveMessage}
         >
