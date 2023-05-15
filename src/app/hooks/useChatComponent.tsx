@@ -104,6 +104,7 @@ export function useChatComponent<T>({
         <button
           onClick={(e) => {
             e.preventDefault()
+            e.stopPropagation()
             setCurrentStatus(ACTION_STATUS.IS_EDITING)
           }}
           className='text-gray-500 hover:text-white transiton-all'
@@ -114,6 +115,7 @@ export function useChatComponent<T>({
           className='text-gray-500 hover:text-white transiton-all'
           onClick={(e) => {
             e.preventDefault()
+            e.stopPropagation()
             setCurrentStatus(ACTION_STATUS.IS_REMOVING)
           }}
         >
@@ -126,6 +128,7 @@ export function useChatComponent<T>({
         <button
           onClick={(event) => {
             event.preventDefault()
+            event.stopPropagation()
             handleSubmit()
           }}
           className='text-gray-500 hover:text-white transiton-all'
@@ -136,6 +139,7 @@ export function useChatComponent<T>({
           className='text-gray-500 hover:text-white transiton-all'
           onClick={(e) => {
             e.preventDefault()
+            e.stopPropagation()
             setCurrentStatus(ACTION_STATUS.NORMAL)
           }}
         >
@@ -155,6 +159,7 @@ export function useChatComponent<T>({
           className='text-gray-500 hover:text-white transiton-all'
           onClick={(e) => {
             e.preventDefault()
+            e.stopPropagation()
             setCurrentStatus(ACTION_STATUS.NORMAL)
           }}
         >

@@ -108,6 +108,10 @@ export const Message: React.FC<Props> = ({
     hljs.highlightAll()
   }, [textElement])
 
+  useEffect(() => {
+    autoHeightOnTyping(textAreaRef?.current as HTMLElement)
+  }, [isEditing])
+
   const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     event.preventDefault()
     event.stopPropagation()
@@ -131,7 +135,7 @@ export const Message: React.FC<Props> = ({
         defaultValue={content}
         autoFocus
         onFocus={handleFocusTextArea}
-        className='m-0 resize-none pl-1 border-0 bg-transparent p-0 focus:ring-1 focus:ring-blue-500 outline-none text-base rounded-sm'
+        className='m-0 resize-none pl-1 max-h-72 border-0 bg-transparent p-0 focus:ring-1 focus:ring-blue-500 outline-none text-base rounded-sm'
       />
 
       <div className='text-center mt-2 flex justify-center text-sm'>

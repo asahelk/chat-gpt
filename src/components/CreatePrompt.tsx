@@ -92,7 +92,7 @@ export function ChatForm() {
             tabIndex={0}
             autoFocus
             defaultValue=''
-            className='w-full h-[24px] resize-none bg-transparent m-0 border-0 outline-none'
+            className='w-full h-[24px] max-h-60 resize-none bg-transparent m-0 border-0 outline-none'
           />
           <button
             disabled={isLoading}
