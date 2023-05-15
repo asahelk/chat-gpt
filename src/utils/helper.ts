@@ -70,7 +70,12 @@ export const getMessagesNodesFromSelectedNode = ({
   const parentNode = list[parentIndex]
   const nodeIndex = list.findIndex((e) => e.id === id)
 
-  if (nodeIndex === -1 || parentIndex === -1) return [node]
+  const restArray = list.slice(nodeIndex)
+
+  const descendantsFromNode = getDescendantsFromNode({ list: restArray, id })
+
+  if (nodeIndex === -1 || parentIndex === -1)
+    return [node, ...descendantsFromNode]
 
   //@ts-ignore
   const firstPartParentArray = list.toSpliced(parentIndex + 1)
@@ -80,11 +85,7 @@ export const getMessagesNodesFromSelectedNode = ({
     node: parentNode
   })
 
-  const restArray = list.slice(nodeIndex)
-
-  return firstPartArray
-    .concat(list[nodeIndex])
-    .concat(getDescendantsFromNode({ list: restArray, id }))
+  return firstPartArray.concat(list[nodeIndex]).concat(descendantsFromNode)
 }
 
 export const isEquaI = <T>(a: T, b: T): boolean =>
