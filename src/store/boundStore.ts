@@ -40,19 +40,27 @@ export const useStore = create<StoreState>()(
         // optional
         return (state, error) => {
           if (error) {
-            console.log('an error happened during hydration', error)
+            console.log('an error happened during hydration' /*error*/)
           } else {
             console.log('hydration finished')
           }
         }
-      }
-      // partialize: (state) =>
-      //   Object.fromEntries(
-      //     Object.entries(state).filter(
-      //       ([key]) =>
-      //         !['selectedConversation', 'selectedConversationId'].includes(key)
-      //     )
-      //   )
+      },
+
+      partialize: (state) =>
+        Object.fromEntries(
+          Object.entries(state).filter(
+            ([key]) =>
+              ![
+                'lastMessage',
+                'selectedConversationId',
+                'selectedConversation',
+                'selectedMessages',
+                'loading'
+              ].includes(key)
+            // !['selectedConversation', 'selectedConversationId'].includes(key)
+          )
+        )
     })
   )
 )

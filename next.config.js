@@ -3,6 +3,10 @@ const nextConfig = {
   experimental: {
     appDir: true
   },
+  reactStrictMode: false,
+  eslint: {
+    ignoreDuringBuilds: true
+  },
   async redirects() {
     return [
       {

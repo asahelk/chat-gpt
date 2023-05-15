@@ -2,6 +2,7 @@
 
 import { useStore } from '@/store/boundStore'
 import { useAutoAnimate } from '@formkit/auto-animate/react'
+import { useEffect } from 'react'
 import { GitHubIcon, ReactIcon, SunIcon, TwitchIcon } from './Icons'
 
 const EXAMPLES = [
@@ -11,6 +12,19 @@ const EXAMPLES = [
 ]
 
 export function Welcome() {
+  const setSelectedConversation = useStore(
+    (state) => state.setSelectedConversation
+  )
+  const setSelectedMessages = useStore((state) => state.setSelectedMessages)
+
+  const setLastMessage = useStore((state) => state.setLastMessage)
+
+  useEffect(() => {
+    setSelectedConversation({ id: null })
+    setSelectedMessages({ messages: [] })
+    setLastMessage({ message: null })
+  }, [])
+
   const [animationParent] = useAutoAnimate()
   const sendPrompt = useStore((state) => state.sendPrompt)
 

@@ -1,5 +1,5 @@
 import { CHAT_TYPES } from '@/constants'
-import { ConversationWithId, NodeEntity, TreeModel } from '@/type'
+import { ConversationWithId, Id, Message, NodeEntity, TreeModel } from '@/type'
 
 export const autoHeightOnTyping = (element: HTMLElement) => {
   if (element) {
@@ -39,6 +39,52 @@ export const filterTreeModel = (
   )
 
   return array.filter((e) => filteredConversationsIDs.has(e.id))
+}
+
+export const getDescendantsFromNode = ({
+  list,
+  id
+}: {
+  list: Message[]
+  id: Id
+}) => {
+  var tempId = id
+  return list.reduce((acc, ele, index) => {
+    if (ele.parentId === tempId) {
+      acc.push(ele)
+      tempId = ele.id
+    }
+    return acc
+  }, [] as Message[])
+}
+
+export const getMessagesNodesFromSelectedNode = ({
+  list,
+  node
+}: {
+  list: Message[]
+  node: Message
+}): Message[] => {
+  const { id, parentId } = node
+  const parentIndex = list.findIndex((e) => e.id === parentId)
+  const parentNode = list[parentIndex]
+  const nodeIndex = list.findIndex((e) => e.id === id)
+
+  if (nodeIndex === -1 || parentIndex === -1) return [node]
+
+  //@ts-ignore
+  const firstPartParentArray = list.toSpliced(parentIndex + 1)
+
+  const firstPartArray = getMessagesNodesFromSelectedNode({
+    list: firstPartParentArray,
+    node: parentNode
+  })
+
+  const restArray = list.slice(nodeIndex)
+
+  return firstPartArray
+    .concat(list[nodeIndex])
+    .concat(getDescendantsFromNode({ list: restArray, id }))
 }
 
 export const isEquaI = <T>(a: T, b: T): boolean =>

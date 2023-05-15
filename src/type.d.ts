@@ -25,6 +25,7 @@ export interface Conversation {
   text: string
   droppable: boolean
   messages: Message[]
+  filteredMessagesToShowInChat: Message[]
   model: string
   previewLastMessage: string
   systemMessage: string
@@ -62,7 +63,9 @@ export interface Message {
   isAI: boolean
   model?: string | null
   error?: boolean | null
-  // conversationId: Id
+  conversationId: Id
+  parentId: Id
+  siblingsInclusive: Id[]
 }
 
 export interface Usage {

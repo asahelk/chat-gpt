@@ -1,6 +1,5 @@
-import hljs from 'highlight.js'
-import 'highlight.js/styles/atom-one-dark.css'
-import { useEffect } from 'react'
+import 'highlight.js/styles/atom-one-dark-reasonable.css'
+import snarkdown from 'snarkdown'
 
 interface Props {
   text: string
@@ -8,16 +7,12 @@ interface Props {
 }
 
 export function TypingEffect({ text, isFinished }: Props) {
-  useEffect(() => {
-    hljs.highlightAll()
-  }, [text, isFinished])
-
   return (
-    <span
+    <div
       className={`${
         !isFinished ? 'after:content-["▋"] after:ml-1 after:animate-typing' : ''
       }`}
-      dangerouslySetInnerHTML={{ __html: text }}
+      dangerouslySetInnerHTML={{ __html: snarkdown(text) }}
     />
   )
 }

@@ -6,6 +6,7 @@ export const defaultConversationInit: Conversation = {
   text: 'New Conversation',
   droppable: false,
   messages: [],
+  filteredMessagesToShowInChat: [],
   model: 'gpt-3.5-turbo',
   systemMessage: '',
   character: null,

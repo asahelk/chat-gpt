@@ -2,7 +2,6 @@ import { useChatComponent } from '@/app/hooks/useChatComponent'
 import { CHAT_TYPES } from '@/constants'
 import { useStore } from '@/store/boundStore'
 import { ConversationWithId } from '@/type'
-import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
 
 import { MessageFavIcon, StarIcon } from './Icons'
@@ -21,13 +20,17 @@ export const Conversation: React.FC<Props> = ({
 }) => {
   const { background = '', bggradient = '' } = inputProps
 
-  const { replace } = useRouter()
+  const { replace, push } = useRouter()
 
   const params = useParams()
 
   const removeConversation = useStore((state) => state.removeConversation)
 
   const updateConversation = useStore((state) => state.updateConversation)
+
+  const selectedConversationId = useStore(
+    (state) => state.selectedConversationId
+  )
 
   const handleRemoveConversation = () => {
     const id = params?.id
@@ -48,7 +51,9 @@ export const Conversation: React.FC<Props> = ({
       removeCallback: handleRemoveConversation
     })
 
-  const setConversation = useStore((state) => state.setConversation)
+  const setSelectedConversation = useStore(
+    (state) => state.setSelectedConversation
+  )
 
   function handleFavorite(event: React.MouseEvent<HTMLButtonElement>) {
     event.preventDefault()
@@ -58,11 +63,22 @@ export const Conversation: React.FC<Props> = ({
     })
   }
 
+  function handleClickConversation(event: React.MouseEvent<HTMLDivElement>) {
+    event.preventDefault()
+
+    if (params?.id !== conversation.id) {
+      console.log('handleClickConversation')
+      // setSelectedConversation({ id: null })
+      push(`chat/${conversation.id}`)
+    }
+  }
+
   return (
-    <Link
-      href={`/chat/${conversation.id}`}
+    <div
+      // href={`/chat/${conversation.id}`}
+      onClick={handleClickConversation}
       {...inputProps}
-      prefetch={false}
+      // prefetch={false}
       draggable={false}
       // onClick={() => selectConversation({ id: conversation.id })}
       className={`${background} focus-within:bg-gptCharcoalGray relative flex items-center gap-3 pl-3 py-3 break-all cursor-pointer group hover:bg-gptMidnightBlue min-h-[50px]`}
@@ -88,6 +104,6 @@ export const Conversation: React.FC<Props> = ({
       </button>
       {ElementTitle()}
       {RenderButtonsActions()}
-    </Link>
+    </div>
   )
 }

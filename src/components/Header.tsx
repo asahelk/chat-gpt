@@ -1,49 +1,52 @@
 'use client'
 
 import { useStore } from '@/store/boundStore'
-import { ConversationWithId } from '@/type'
 import { useEffect, useState } from 'react'
 import { MenuIconButton } from './MenuIconButton'
 
 interface Props {}
 
 export const Header: React.FC<Props> = () => {
-  const [isHydrated, setIsHydrated] = useState(false)
+  const selectedConversation = useStore((state) => state.selectedConversation)
+
+  const [model, setModel] = useState<string>()
+  const [text, setText] = useState<string>()
+  const [messagesQuantity, setMessagesQuantity] = useState<number>()
+
+  const init = () => {
+    const text = selectedConversation?.text ?? 'New Chat'
+    const model = selectedConversation?.model ?? '-'
+    let messagesQuantity = 0
+    if (selectedConversation)
+      messagesQuantity = selectedConversation?.messages.length
+
+    setModel(model)
+    setText(text)
+    setMessagesQuantity(messagesQuantity)
+  }
 
   useEffect(() => {
-    setIsHydrated(true)
-  }, [])
+    init()
+  }, [selectedConversation])
 
-  const selectedConversationId = useStore(
-    (state) => state.selectedConversationId
-  )
-
-  // const selectConversation = useStore((state) => state.selectConversation)
-  // selectConversation({ id })
-  const {
-    text = 'New Chat',
-    model = 'xd2',
-    messages = []
-  } = useStore(
-    (state) => state.selectedConversation ?? {}
-  ) as ConversationWithId
+  // const selectedConversationId = useStore(
+  //   (state) => state.selectedConversationId
+  // )
 
   const RenderHeader = () => {
-    if (!selectedConversationId) return <span>Start a new chat</span>
+    if (!messagesQuantity) return <span>Start a new chat</span>
     return (
       <>
         <span className='shrink-0'>{model}</span>
         <span className='hidden sm:inline-block'>⋅</span>
         <span className='hidden sm:inline-block'>
-          {messages.length} messages
+          {messagesQuantity} messages
         </span>
         <span className='hidden sm:inline-block'>⋅</span>
         <span className='hidden sm:inline-block'>64/4098 tokens</span>
       </>
     )
   }
-
-  if (!isHydrated) return <></>
 
   return (
     <div className='hide-when-print sticky top-0 z-30 bg-white dark:bg-gptdarkgray/70 backdrop-blur'>

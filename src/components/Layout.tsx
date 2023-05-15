@@ -3,7 +3,7 @@ import { ChatForm } from './CreatePrompt'
 import { Header } from './Header'
 
 type Props = {
-  children: React.ReactNode
+  children: React.ReactNode | undefined
 }
 
 export const Layout: React.FC<Props> = ({ children }) => {

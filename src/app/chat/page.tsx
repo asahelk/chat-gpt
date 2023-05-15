@@ -1,14 +1,11 @@
 import { Welcome } from '@/components/Welcome'
 
-type Props = {
-  children: React.ReactNode
-}
+interface Props {}
 
-const Home: React.FC<Props> = ({ children }) => {
+const Home = () => {
   return (
     <>
       <Welcome />
-      {children}
     </>
   )
 }

@@ -6,12 +6,14 @@ import { PlusIcon } from './Icons'
 export function NewChatButton() {
   const router = useRouter()
 
-  const setConversation = useStore((state) => state.setConversation)
+  const setSelectedConversation = useStore(
+    (state) => state.setSelectedConversation
+  )
 
   const handleClick = () => {
-    setConversation({ id: null })
-
+    // setSelectedConversation({ id: null })
     router.push('/chat')
+
     document.getElementById('mainInput')?.focus()
   }
 

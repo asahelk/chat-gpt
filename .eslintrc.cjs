@@ -16,6 +16,8 @@ module.exports = {
   },
   plugins: ['react'],
   rules: {
+    'multiline-ternary': 'off',
+    'space-before-function-paren': 'off',
     '@typescript-eslint/explicit-function-return-type': 'off',
     'react/react-in-jsx-scope': 'off',
     'react/prop-types': 'off'

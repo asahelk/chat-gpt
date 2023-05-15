@@ -39,9 +39,10 @@ export function TreeSideNav() {
       (e, index) => ({ ...e.data, parent: e.parent, order: index } as TreeModel)
     )
 
-    const conversations = formattedTreeData.filter(
-      (e) => e.type === CHAT_TYPES.CHAT
-    )
+    const conversations = formattedTreeData
+      .filter((e) => e.type === CHAT_TYPES.CHAT)
+      .map((entry, index) => ({ ...entry, order: index }))
+
     const folders = formattedTreeData.filter(
       (e) => e.type === CHAT_TYPES.FOLDER
     )

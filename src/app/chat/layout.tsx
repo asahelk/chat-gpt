@@ -4,7 +4,7 @@ import { Header } from '@/components/Header'
 import '../styles/globals.css'
 
 type Props = {
-  children: React.ReactNode
+  children: React.ReactNode | undefined
 }
 
 export const metadata = {

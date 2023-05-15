@@ -1,5 +1,5 @@
 type Props = {
-  children: React.ReactNode
+  children: React.ReactNode | undefined
 }
 
 export const Avatar: React.FC<Props> = ({ children }) => {

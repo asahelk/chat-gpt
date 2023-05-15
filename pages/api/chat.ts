@@ -1,5 +1,5 @@
-import { Message } from '@/type'
-import { NextApiRequest, NextApiResponse } from 'next'
+import type { Message } from '@/type'
+import type { NextApiRequest, NextApiResponse } from 'next'
 
 const { OPENAI_API_KEY } = process.env
 

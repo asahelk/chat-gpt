@@ -14,7 +14,10 @@ export interface ConversationState {
   conversationsList: ConversationWithId[]
   selectedConversation?: ConversationWithId | null
   selectedConversationId?: Id | null
+  selectedMessages: Message[] | []
+  lastMessage?: Message | null
   removeConversation: ({ id }: { id: Id }) => void
+  setLastMessage: ({ message }: { message?: Message | null }) => void
   addNewConversation: (conversation: Conversation) => void
   updateConversation: (conversation: ConversationWithId) => void
   updateConversationsList: (conversationsList: ConversationWithId[]) => void
@@ -22,9 +25,17 @@ export interface ConversationState {
     conversationsList: ConversationWithId[]
   ) => void
   clearConversations: () => void
-  setConversation: ({ id }: { id: Id | null }) => void
-  sendPrompt: ({ prompt }: { prompt: string }) => Promise<Id>
-  removeContiguousMessages: ({ id }: { id: Id }) => void
+  setSelectedConversation: ({ id }: { id: Id | null }) => void
+  setSelectedMessages: ({ messages }: { messages: Message[] }) => void
+  addMessageToSelectedMessages: ({ message }: { message: Message }) => void
+  sendPrompt: ({
+    prompt,
+    message
+  }: {
+    prompt: string
+    message?: Message
+  }) => Promise<Id>
+  removeContiguousMessages: ({ id, index }: { id: Id; index: number }) => void
 }
 
 export const createConversationSlice: StateCreator<
@@ -37,12 +48,26 @@ export const createConversationSlice: StateCreator<
   conversationsList: [],
   selectedConversationId: null,
   selectedConversation: null,
-  setConversation: ({ id }: { id: Id | null }) => {
+  selectedMessages: [],
+  lastMessage: undefined,
+  setLastMessage: ({ message }) => {
+    set((state) => ({ lastMessage: message }))
+  },
+  setSelectedConversation: ({ id }: { id: Id | null }) => {
     const conversation = get().conversationsList.find((e) => e.id === id)
-    set(() => ({
-      selectedConversationId: id,
+
+    get().setSelectedMessages({ messages: conversation?.messages || [] })
+
+    set((state) => ({
+      selectedConversationId: conversation ? id : null,
       selectedConversation: conversation
     }))
+  },
+  setSelectedMessages: ({ messages }: { messages: Message[] }) => {
+    set((state) => ({ selectedMessages: [...messages] }))
+  },
+  addMessageToSelectedMessages: ({ message }: { message: Message }) => {
+    set((state) => ({ selectedMessages: [...state.selectedMessages, message] }))
   },
   clearConversations: () => {
     set(() => ({
@@ -66,35 +91,111 @@ export const createConversationSlice: StateCreator<
       )
     }))
   },
-  removeContiguousMessages: ({ id }: { id: Id }) => {
-    const userMessageIndex = get().selectedConversation?.messages.findIndex(
+  removeContiguousMessages: ({ id }) => {
+    const messageNodeToBeRemovedIndex = get().selectedMessages.findIndex(
       (e) => e.id === id
     )
 
+    if (messageNodeToBeRemovedIndex === -1) return
+
+    const messageNodeToBeRemoved =
+      get().selectedMessages[messageNodeToBeRemovedIndex]
+
+    if (!messageNodeToBeRemoved) return
+
+    const contigousMessageNodeToBeRemoved =
+      get().selectedMessages[messageNodeToBeRemovedIndex + 1]
+
+    const childrenNodes = get().selectedMessages.filter(
+      (e) => e.parentId === contigousMessageNodeToBeRemoved.id
+    )
+
+    const siblingsFromRemovedNode = get().selectedMessages.filter(
+      (e) =>
+        messageNodeToBeRemoved.siblingsInclusive.includes(e.id) && e.id !== id
+    )
+
+    const newSiblings = siblingsFromRemovedNode.concat(childrenNodes)
+
+    const newSiblingsIds = newSiblings.map((e) => e.id)
+
+    newSiblings.forEach((ele) => {
+      ele.parentId = messageNodeToBeRemoved.parentId
+      ele.siblingsInclusive = newSiblingsIds.length > 1 ? newSiblingsIds : []
+    })
+
     const selectedConversationIndex = get().conversationsList.findIndex(
-      (e) => e.id === get().selectedConversationId
+      (e) => e.id === messageNodeToBeRemoved.conversationId
     )
 
     set((state) => {
       if (!state.selectedConversation) return {}
 
-      //@ts-ignore
-      const messages = state.selectedConversation.messages.toSpliced(
-        userMessageIndex,
-        2
-      )
+      const messages = state.selectedMessages
+        //@ts-ignore
+        .toSpliced(messageNodeToBeRemovedIndex, 2) as Message[]
 
-      state.selectedConversation.messages = messages
+      // messages
+      //   .filter((e) => newSiblingsIds.includes(e.id))
+      //   .forEach((e) => (e.siblingsInclusive = newSiblingsIds))
+      // .map((entry: Message) => ({ ...entry, siblingsInclusive: siblingsIds }))
+
+      state.selectedConversation.messages = structuredClone(messages)
 
       state.conversationsList[selectedConversationIndex] = structuredClone(
         state.selectedConversation
       )
+
       return {
+        selectedMessages: messages,
         selectedConversation: structuredClone(state.selectedConversation),
-        conversationsList: [...state.conversationsList]
+        conversationsList: structuredClone(state.conversationsList)
       }
     })
   },
+  // removeContiguousMessages: ({ id }) => {
+  //   const userMessageIndex = get().selectedMessages.findIndex(
+  //     (e) => e.id === id
+  //   )
+
+  //   if (userMessageIndex === -1) return
+
+  //   const userMessage = get().selectedMessages[userMessageIndex]
+
+  //   if (!userMessage) return
+
+  //   const newSiblingsIds = userMessage.siblingsInclusive.filter(
+  //     (e) => e !== userMessage.id
+  //   )
+
+  //   const selectedConversationIndex = get().conversationsList.findIndex(
+  //     (e) => e.id === get().selectedConversationId
+  //   )
+
+  //   set((state) => {
+  //     if (!state.selectedConversation) return {}
+
+  //     const messages = state.selectedConversation.messages
+  //       //@ts-ignore
+  //       .toSpliced(userMessageIndex, 2) as Message[]
+
+  //     messages
+  //       .filter((e) => newSiblingsIds.includes(e.id))
+  //       .forEach((e) => (e.siblingsInclusive = newSiblingsIds))
+  //     // .map((entry: Message) => ({ ...entry, siblingsInclusive: siblingsIds }))
+
+  //     state.selectedConversation.messages = messages
+
+  //     state.conversationsList[selectedConversationIndex] = structuredClone(
+  //       state.selectedConversation
+  //     )
+  //     return {
+  //       selectedMessages: messages,
+  //       selectedConversation: structuredClone(state.selectedConversation),
+  //       conversationsList: [...state.conversationsList]
+  //     }
+  //   })
+  // },
   addNewConversation: (conversation) => {
     const uuID = crypto.randomUUID() as Id
 
@@ -120,10 +221,10 @@ export const createConversationSlice: StateCreator<
 
       const selectedConversation = get().selectedConversation
       if (selectedConversation && selectedConversation.id === conversation.id) {
-        state.selectedConversation = {
+        state.selectedConversation = structuredClone({
           ...state.selectedConversation,
           ...conversation
-        }
+        })
       }
 
       return {
@@ -150,7 +251,9 @@ export const createConversationSlice: StateCreator<
       }
     })
   },
-  sendPrompt: async ({ prompt }) => {
+  sendPrompt: async ({ prompt, message }) => {
+    const isEditedMessage = !!message
+
     let selectedConversationIndex = get().conversationsList.findIndex(
       (elem) => elem.id === get().selectedConversationId
     )
@@ -161,22 +264,54 @@ export const createConversationSlice: StateCreator<
     const userMessageID = crypto.randomUUID()
     const IAMessageID = crypto.randomUUID()
 
-    const partialNewConversationMessages: Message[] = [
+    let partialNewConversationMessages: Message[] = [
       {
         id: userMessageID,
         role: 'User',
         isFinished: true,
         isAI: false,
-        content: prompt
+        content: prompt,
+        parentId: '0',
+        siblingsInclusive: [],
+        conversationId: selectedConversation?.id ?? ''
       },
       {
         id: IAMessageID,
         role: 'System',
         isFinished: false,
         isAI: true,
-        content: ''
+        content: '',
+        parentId: userMessageID,
+        siblingsInclusive: [],
+        conversationId: selectedConversation?.id ?? ''
       }
     ]
+
+    if (isEditedMessage) {
+      // const messagesSiblings = selectedConversation.filter( //Could just by reference get and update messages in a forEach || or use indexes
+      const messagesSiblings = get().selectedMessages.filter(
+        (e) => e.parentId === message.parentId
+      )
+
+      const siblingsIds = messagesSiblings.flatMap((e) => e.id)
+      siblingsIds.push(userMessageID)
+
+      selectedConversation.messages = selectedConversation.messages.map(
+        (entry) => {
+          if (siblingsIds.includes(entry.id)) {
+            return { ...entry, siblingsInclusive: siblingsIds }
+          }
+          return entry
+        }
+      )
+      // messagesSiblings.forEach((e) => (e.siblingsInclusive = siblingsIds)) //update by reference
+
+      partialNewConversationMessages[0] = {
+        ...message,
+        id: userMessageID,
+        siblingsInclusive: siblingsIds
+      }
+    }
 
     let fullChatMessages = partialNewConversationMessages
 
@@ -185,10 +320,15 @@ export const createConversationSlice: StateCreator<
 
       selectedConversationIndex = get().conversationsList.length
 
+      partialNewConversationMessages = partialNewConversationMessages.map(
+        (entry) => ({ ...entry, conversationId: uuID })
+      )
+
       const newConversation: ConversationWithId = {
         ...defaultConversationInit,
         id: uuID,
-        messages: partialNewConversationMessages
+        messages: partialNewConversationMessages,
+        order: get().conversationsList.length //BC dnd tree doesn't have a index param
       }
 
       selectedConversation = newConversation
@@ -196,10 +336,16 @@ export const createConversationSlice: StateCreator<
       set((state) => ({
         loading: true,
         selectedConversation,
+        selectedMessages: partialNewConversationMessages,
         // selectedConversationId: uuID,
         conversationsList: [...state.conversationsList, newConversation]
       }))
     } else {
+      const lastMessage = get().lastMessage
+
+      if (!isEditedMessage && lastMessage)
+        partialNewConversationMessages[0].parentId = lastMessage.id
+
       fullChatMessages = [
         ...selectedConversation.messages,
         ...partialNewConversationMessages
@@ -209,6 +355,7 @@ export const createConversationSlice: StateCreator<
 
       set((state) => ({
         loading: true,
+        selectedMessages: [...fullChatMessages],
         conversationsList: [...state.conversationsList]
       }))
     }
@@ -225,21 +372,6 @@ export const createConversationSlice: StateCreator<
         console.log('el error', e)
 
         set((state) => {
-          if (selectedConversation) {
-            selectedConversation.messages = selectedConversation.messages.map(
-              (entry) => {
-                if (entry.id === IAMessageID) {
-                  return {
-                    ...entry,
-                    error: true,
-                    content: message
-                  }
-                }
-                return entry
-              }
-            )
-          }
-
           state.conversationsList[selectedConversationIndex].messages = [
             ...selectedConversation.messages
           ]
@@ -254,7 +386,7 @@ export const createConversationSlice: StateCreator<
       }
 
       eventSource.onmessage = (event) => {
-        const lastMessage = selectedConversation.messages.find(
+        const lastMessage = get().selectedMessages.find(
           (e) => e.id === IAMessageID
         )
 
@@ -266,6 +398,7 @@ export const createConversationSlice: StateCreator<
         }
 
         if (event.data === '[DONE]') {
+          console.log('EN EL DONE')
           lastMessage.isFinished = true
 
           set((state) => {
@@ -275,6 +408,7 @@ export const createConversationSlice: StateCreator<
             return {
               loading: false,
               selectedConversation: structuredClone(selectedConversation),
+              selectedMessages: [...state.selectedMessages],
               selectedConversationId: selectedConversation.id,
               conversationsList: [...state.conversationsList]
             }
@@ -284,29 +418,35 @@ export const createConversationSlice: StateCreator<
           return
         }
 
-        message += JSON.parse(event.data)
-        lastMessage.content = message
+        const messageData = JSON.parse(event.data) ?? ''
 
-        selectedConversation.previewLastMessage = message
-          .trim()
-          .substring(0, 42)
-          .trim()
+        if (messageData.length) {
+          message += messageData
+          lastMessage.content = message
 
-        set((state) => {
-          state.conversationsList[selectedConversationIndex] =
-            structuredClone(selectedConversation)
+          selectedConversation.previewLastMessage = message
+            .trim()
+            .substring(0, 40)
+            .trim()
 
-          return {
-            loading: true,
-            selectedConversation: structuredClone(selectedConversation),
-            selectedConversationId: selectedConversation.id,
-            conversationsList: [...state.conversationsList]
-          }
-        })
+          set((state) => {
+            state.conversationsList[selectedConversationIndex] =
+              structuredClone(selectedConversation)
+
+            return {
+              loading: true,
+              selectedConversation: structuredClone(selectedConversation),
+              selectedMessages: [...state.selectedMessages],
+              selectedConversationId: selectedConversation.id,
+              conversationsList: [...state.conversationsList]
+            }
+          })
+        }
       }
     } catch (error) {
       console.error(error)
     } finally {
+      //Questionable
       set(() => ({
         loading: false
       }))

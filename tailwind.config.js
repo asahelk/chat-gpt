@@ -21,7 +21,9 @@ module.exports = {
         gptlightgray: '#444654',
         gptSteelBlue: '#3B3E44',
         gptCharcoalGray: '#18191a',
-        gptMidnightBlue: '#2A2B32'
+        gptMidnightBlue: '#2A2B32',
+        gptGunmetal: '#565869',
+        gptJungleGreen: '#1a7f64'
       }
     }
   },
