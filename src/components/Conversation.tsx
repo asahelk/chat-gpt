@@ -2,7 +2,7 @@ import { useChatComponent } from '@/app/hooks/useChatComponent'
 import { CHAT_TYPES } from '@/constants'
 import { useStore } from '@/store/boundStore'
 import { ConversationWithId } from '@/type'
-import { useParams, usePathname, useRouter } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 
 import Link from 'next/link'
 import { MessageFavIcon, StarIcon } from './Icons'
@@ -20,7 +20,6 @@ export const Conversation: React.FC<Props> = ({
   ...inputProps
 }) => {
   const { replace, push } = useRouter()
-  const pathname = usePathname()
 
   const params = useParams()
 
