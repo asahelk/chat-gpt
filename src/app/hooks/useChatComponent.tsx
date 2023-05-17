@@ -45,6 +45,7 @@ export function useChatComponent<T>({
 
   const onHandleRemove = (event: React.MouseEvent<HTMLButtonElement>) => {
     event?.preventDefault()
+    event?.stopPropagation()
     if (removeCallback) {
       removeCallback({ id })
 

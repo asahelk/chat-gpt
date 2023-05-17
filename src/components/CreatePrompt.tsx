@@ -43,30 +43,43 @@ export function ChatForm() {
   const sendPrompt = useStore((state) => state.sendPrompt)
   const isLoading = useStore((state) => state.loading)
   const textAreaRef = useRef<HTMLTextAreaElement>(null)
+  const [inputText, setInputText] = useState<string>()
+  const selectedConversationId = useStore(
+    (state) => state.selectedConversationId
+  )
   const { push } = useRouter()
 
   const handleSubmit = async (event?: React.FormEvent<HTMLFormElement>) => {
     event?.preventDefault()
+
     if (isLoading) return
+
     const idParam = params?.id
     const element = textAreaRef.current as HTMLTextAreaElement
     const { value } = element
-    const id = await sendPrompt({ prompt: value }) //Instead waiting for, could call the selectedConversationId
-    // const id = '582ac036-115d-4837-bb6d-d5daa5f3449e'
 
-    if (idParam !== id) push(`/chat/${id}`)
+    sendPrompt({ prompt: value.trim() })
+
+    if (idParam !== selectedConversationId) push(`/chat/newConversation`)
+
     element.value = ''
+    setInputText('')
+    element.style.height = '24px'
   }
 
   const handleChange = () => {
     const element = textAreaRef.current as HTMLTextAreaElement
 
+    setInputText(element?.value ?? '')
     autoHeightOnTyping(element)
   }
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLFormElement>) => {
-    if (event.key === 'Enter' && !event.shiftKey) {
+    const text = textAreaRef.current?.value.trim()
+
+    if (event.key === 'Enter' && !event.shiftKey && !isLoading && text) {
       event.preventDefault()
+
       handleSubmit()
     }
   }
@@ -92,18 +105,26 @@ export function ChatForm() {
             tabIndex={0}
             autoFocus
             defaultValue=''
+            value={inputText}
             className='w-full h-[24px] max-h-60 resize-none bg-transparent m-0 border-0 outline-none'
           />
+
           <button
-            disabled={isLoading}
+            disabled={isLoading || !inputText}
             type='submit'
-            className={`opacity-40 absolute p-1 rounded-md bottom-0 h-full right-2.5 ${
+            className={` opacity-40 absolute p-1 rounded-md bottom-0 h-full right-2.5 ${
               isLoading
                 ? 'pointer-events-none'
                 : 'hover:shadow-2xl rounded-full'
             }`}
           >
-            {isLoading ? <LoadingButton /> : <SendIcon />}
+            {isLoading ? (
+              <LoadingButton />
+            ) : (
+              <SendIcon
+                className={isLoading || !inputText ? 'opacity-50' : ''}
+              />
+            )}
           </button>
         </div>
       </form>

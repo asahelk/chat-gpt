@@ -4,7 +4,7 @@ import { useChatMessage } from '@/app/hooks/useChatMessage'
 import { useStore } from '@/store/boundStore'
 import { Id } from '@/type'
 import { useAutoAnimate } from '@formkit/auto-animate/react'
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 import { MemoizedMessage } from './MemoizedMessage'
 
@@ -15,6 +15,8 @@ export function Chat() {
     (state) => state.setSelectedConversation
   )
   // const setSelectedMessages = useStore((state) => state.setSelectedMessages)
+
+  const { replace } = useRouter()
 
   const {
     filteredMessages,
@@ -33,6 +35,10 @@ export function Chat() {
       setSelectedConversation({ id: params?.id as Id })
     }
   }, [])
+
+  useEffect(() => {
+    if (filteredMessages?.length === 0) replace('/chat')
+  }, [filteredMessages])
 
   // useEffect(() => {
   //   setFilteredMessages(conversationMessages)

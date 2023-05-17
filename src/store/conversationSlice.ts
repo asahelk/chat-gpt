@@ -337,14 +337,14 @@ export const createConversationSlice: StateCreator<
         loading: true,
         selectedConversation,
         selectedMessages: partialNewConversationMessages,
-        // selectedConversationId: uuID,
+        selectedConversationId: uuID,
         conversationsList: [...state.conversationsList, newConversation]
       }))
     } else {
-      const lastMessage = get().lastMessage
+      const oldLastMessage = get().lastMessage
 
-      if (!isEditedMessage && lastMessage)
-        partialNewConversationMessages[0].parentId = lastMessage.id
+      if (!isEditedMessage && oldLastMessage)
+        partialNewConversationMessages[0].parentId = oldLastMessage.id
 
       fullChatMessages = [
         ...selectedConversation.messages,
@@ -360,27 +360,27 @@ export const createConversationSlice: StateCreator<
       }))
     }
 
+    const newLastMessage = partialNewConversationMessages[1]
+
+    // if (!lastMessage) {
+    //   set(() => ({ loading: false }))
+
+    //   return selectedConversation.id
+    // }
+
     const response = await fetch('/api/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ messages: fullChatMessages })
     })
 
-    const lastMessage = get().selectedMessages.find((e) => e.id === IAMessageID)
-
-    if (!lastMessage) {
-      set(() => ({ loading: false }))
-
-      return selectedConversation.id
-    }
-
     if (!response.ok) {
       const error = await response.json()
       console.log('EL ERROR', error)
       set((state) => {
-        if (lastMessage) {
+        if (newLastMessage) {
           partialNewConversationMessages[0].error = true
-          lastMessage.error = true
+          newLastMessage.error = true
           // lastMessage.content = 'que fue mano'
         }
 
@@ -418,15 +418,15 @@ export const createConversationSlice: StateCreator<
       const { value, done: readerDone } = await reader.read()
 
       if (readerDone) {
-        console.log('EN EL DONE')
-        lastMessage.isFinished = true
+        newLastMessage.isFinished = true
         done = true
       }
 
       let chunkValue = decoder.decode(value)
 
       text += chunkValue
-      lastMessage.content = text
+
+      newLastMessage.content = text
 
       selectedConversation.previewLastMessage = text
         .trim()

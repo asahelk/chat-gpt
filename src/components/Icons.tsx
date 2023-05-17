@@ -44,7 +44,7 @@ export function ClipboardIcon({ className = 'w-4 h-4' }: ClassName) {
     </svg>
   )
 }
-export function SendIcon() {
+export function SendIcon({ className = 'w-4 h-4 mr-1' }: ClassName) {
   return (
     <svg
       stroke='currentColor'
@@ -53,7 +53,7 @@ export function SendIcon() {
       viewBox='0 0 24 24'
       strokeLinecap='round'
       strokeLinejoin='round'
-      className='w-4 h-4 mr-1'
+      className={`${className} w-4 h-4 mr-1`}
       height='1em'
       width='1em'
       xmlns='http://www.w3.org/2000/svg'

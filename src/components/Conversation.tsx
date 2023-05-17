@@ -35,7 +35,8 @@ export const Conversation: React.FC<Props> = ({
   const handleRemoveConversation = () => {
     const id = params?.id
 
-    if (id && id === conversation.id) replace('/chat')
+    if (selectedConversationId && selectedConversationId === conversation.id)
+      replace('/chat')
 
     removeConversation({ id: conversation.id })
   }
