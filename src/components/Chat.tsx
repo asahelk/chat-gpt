@@ -24,14 +24,10 @@ export function Chat() {
     setMessageSelected
   } = useChatMessage()
 
-  console.log('HOLI', conversationMessages)
-
   const params = useParams()
 
   useEffect(() => {
-    console.log('useffect')
     if (params?.id) {
-      console.log('SETEO', params?.id)
       setSelectedConversation({ id: params?.id as Id })
     }
   }, [])

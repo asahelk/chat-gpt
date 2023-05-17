@@ -19,8 +19,6 @@ const INITIAL_ROLE_MESSAGE = {
 export async function POST(request: Request) {
   const body = await request.json()
 
-  console.log('EL BODY', body)
-
   const { prompt, messages } = body as {
     prompt?: string
     messages: Message[]
