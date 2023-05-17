@@ -360,97 +360,93 @@ export const createConversationSlice: StateCreator<
       }))
     }
 
-    const compressedConversation = JSON.stringify(fullChatMessages)
+    const response = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: fullChatMessages })
+    })
 
-    try {
-      const eventSource = new EventSource(
-        '/api/chat?prompt=' + prompt + '&conversation=' + compressedConversation
-      )
-      let message = ''
+    const lastMessage = get().selectedMessages.find((e) => e.id === IAMessageID)
 
-      eventSource.onerror = (e) => {
-        console.log('el error', e)
+    if (!lastMessage) {
+      set(() => ({ loading: false }))
 
-        set((state) => {
-          state.conversationsList[selectedConversationIndex].messages = [
-            ...selectedConversation.messages
-          ]
-
-          return {
-            loading: false,
-            selectedConversation: structuredClone(selectedConversation),
-            selectedConversationId: selectedConversation.id,
-            conversationsList: [...state.conversationsList]
-          }
-        })
-      }
-
-      eventSource.onmessage = (event) => {
-        const lastMessage = get().selectedMessages.find(
-          (e) => e.id === IAMessageID
-        )
-
-        if (!lastMessage) {
-          set(() => ({ loading: false }))
-
-          eventSource.close()
-          return
-        }
-
-        if (event.data === '[DONE]') {
-          console.log('EN EL DONE')
-          lastMessage.isFinished = true
-
-          set((state) => {
-            state.conversationsList[selectedConversationIndex] =
-              structuredClone(selectedConversation)
-
-            return {
-              loading: false,
-              selectedConversation: structuredClone(selectedConversation),
-              selectedMessages: [...state.selectedMessages],
-              selectedConversationId: selectedConversation.id,
-              conversationsList: [...state.conversationsList]
-            }
-          })
-
-          eventSource.close()
-          return
-        }
-
-        const messageData = JSON.parse(event.data) ?? ''
-
-        if (messageData.length) {
-          message += messageData
-          lastMessage.content = message
-
-          selectedConversation.previewLastMessage = message
-            .trim()
-            .substring(0, 40)
-            .trim()
-
-          set((state) => {
-            state.conversationsList[selectedConversationIndex] =
-              structuredClone(selectedConversation)
-
-            return {
-              loading: true,
-              selectedConversation: structuredClone(selectedConversation),
-              selectedMessages: [...state.selectedMessages],
-              selectedConversationId: selectedConversation.id,
-              conversationsList: [...state.conversationsList]
-            }
-          })
-        }
-      }
-    } catch (error) {
-      console.error(error)
-    } finally {
-      //Questionable
-      set(() => ({
-        loading: false
-      }))
+      return selectedConversation.id
     }
+
+    if (!response.ok) {
+      const error = await response.json()
+      console.log('EL ERROR', error)
+      set((state) => {
+        if (lastMessage) {
+          partialNewConversationMessages[0].error = true
+          lastMessage.error = true
+          // lastMessage.content = 'que fue mano'
+        }
+
+        selectedConversation.previewLastMessage =
+          'An error occurred. Please try again later...'
+
+        state.conversationsList[selectedConversationIndex] =
+          structuredClone(selectedConversation)
+
+        return {
+          loading: false,
+          selectedConversation: structuredClone(selectedConversation),
+          selectedMessages: [...state.selectedMessages],
+          selectedConversationId: selectedConversation.id,
+          conversationsList: [...state.conversationsList]
+        }
+      })
+      throw new Error('Error in the server')
+    }
+
+    const data = response.body
+
+    if (!data) {
+      throw new Error('No data in the server')
+    }
+
+    const reader = data.getReader()
+    const decoder = new TextDecoder()
+
+    let done = false
+
+    let text = ''
+
+    while (!done) {
+      const { value, done: readerDone } = await reader.read()
+
+      if (readerDone) {
+        console.log('EN EL DONE')
+        lastMessage.isFinished = true
+        done = true
+      }
+
+      let chunkValue = decoder.decode(value)
+
+      text += chunkValue
+      lastMessage.content = text
+
+      selectedConversation.previewLastMessage = text
+        .trim()
+        .substring(0, 40)
+        .trim()
+
+      set((state) => {
+        state.conversationsList[selectedConversationIndex] =
+          structuredClone(selectedConversation)
+
+        return {
+          loading: !done,
+          selectedConversation: structuredClone(selectedConversation),
+          selectedMessages: [...state.selectedMessages],
+          selectedConversationId: selectedConversation.id,
+          conversationsList: [...state.conversationsList]
+        }
+      })
+    }
+
     return selectedConversation.id
   }
 })

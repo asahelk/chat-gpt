@@ -17,38 +17,30 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  if (req.method !== 'GET') return res.status(405).end()
+  if (req.method !== 'POST') return res.status(405).end()
 
-  const { prompt, conversation } = req.query as {
+  const { prompt, messages } = req.body as {
     prompt?: string
-    conversation: string
+    messages: Message[]
   }
 
-  if (!prompt) {
-    return res.status(400).json({ error: 'Prompt is required' })
-  }
+  // if (!prompt) {
+  //   return res.status(400).json({ error: 'Prompt is required' })
+  // }
 
   console.log('EL PROMPT', prompt)
-  console.log('-------')
+  console.log('EL CONVERSATION', messages)
+  console.log('-------\n\n')
 
   let previousConversation: { role: string; content: string }[] = []
-  try {
-    const decompressedConversation = conversation
-    let parsedConversation: Message[] = []
-    try {
-      parsedConversation = JSON.parse(decompressedConversation)
-    } catch (e) {
-      console.error('Problems parsing', decompressedConversation)
-      console.error('El Parse error -> ', e)
-      return res.status(400).json({ error: 'Error parsing' })
-    }
 
-    previousConversation = parsedConversation
+  try {
+    previousConversation = messages
       .map((entry) => {
         const role = entry.isAI ? 'assistant' : 'user'
 
-        // ignore messages without content
-        if (!entry.content) return null
+        // ignore messages without content or error
+        if (!entry.content || entry.error) return null
 
         return {
           role,
@@ -56,15 +48,15 @@ export default async function handler(
         }
       })
       .filter((entry) => entry !== null) as { role: string; content: string }[]
-    console.log('EL conversation', decompressedConversation)
   } catch (error) {
-    console.error('Error decompressing -> ', conversation)
+    console.error('Error mapping -> ', messages)
     console.error(error)
-    return res.status(400).json({ error: 'Error decompressing' })
+    return res.status(400).json({ error: 'Error mapping' })
   }
 
-  const messages = [INITIAL_ROLE_MESSAGE, ...previousConversation]
+  const formattedMessages = [INITIAL_ROLE_MESSAGE, ...previousConversation]
 
+  console.log('LOS MESSAGES', messages)
   try {
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -75,7 +67,8 @@ export default async function handler(
       body: JSON.stringify({
         model: 'gpt-3.5-turbo', // gpt-3.5-turbo / text-davinci-003
         stream: true,
-        messages
+        messages: formattedMessages,
+        temperature: 0.2
       })
     })
 
@@ -98,7 +91,7 @@ export default async function handler(
     while (true) {
       const { done, value } = await reader.read()
       if (done) {
-        res.end('data: [DONE]\n\n')
+        res.end()
         break
       }
 
@@ -110,7 +103,7 @@ export default async function handler(
 
       for (const line of data) {
         if (line === '[DONE]') {
-          res.end('data: [DONE]\n\n')
+          res.end()
           break
         }
 
@@ -125,7 +118,7 @@ export default async function handler(
 
         console.log('----------------')
         console.log({ content })
-        res.write(`data: ${JSON.stringify(content)}\n\n`)
+        res.write(content)
         res.flushHeaders()
       }
     }

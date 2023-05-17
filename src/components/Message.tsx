@@ -157,7 +157,7 @@ export const Message: React.FC<Props> = ({
   )
 
   const renderContent = () => {
-    if (error) return <ErrorMessage />
+    if (error && isAI) return <ErrorMessage message={content} />
 
     if (isEditing) return textAreaMessage
 
