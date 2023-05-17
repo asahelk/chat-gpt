@@ -1,9 +1,16 @@
 import { useStore } from '@/store/boundStore'
 import { defaultFolderInit } from '@/utils/initObjects'
 import { MultiBackend, getBackendOptions } from '@minoru/react-dnd-treeview'
+import { useState } from 'react'
 import { DndProvider } from 'react-dnd'
 import { ConversationList } from './ConversationList'
-import { FolderIcon, SettingsIcon, TrashIcon } from './Icons'
+import {
+  CheckIcon,
+  CloseIcon,
+  FolderIcon,
+  SettingsIcon,
+  TrashIcon
+} from './Icons'
 import { NewChatButton } from './NewChatButton'
 import { SearchChat } from './SearchChat'
 import { TreeSideNav } from './TreeSideNav'
@@ -18,13 +25,23 @@ export const SideNav: React.FC<Props> = ({ className }) => {
   const clearConversations = useStore((state) => state.clearConversations)
   const isShowNavOpen = useStore((state) => state.isShowNavOpen)
 
-  // const [animationParent] = useAutoAnimate()
-
-  const placeHolderName = 'New folder'
+  const [showConfirmationsIcons, setShowConfirmationsIcons] =
+    useState<boolean>(false)
 
   const sideNavClassName = isShowNavOpen
     ? '!translate-x-0 '
     : '-translate-x-full '
+
+  const handleClickClearConversations = (
+    event: React.MouseEvent<HTMLDivElement>
+  ) => {
+    if (!showConfirmationsIcons) {
+      setShowConfirmationsIcons(true)
+      setTimeout(() => {
+        setShowConfirmationsIcons(false)
+      }, 5000)
+    }
+  }
 
   return (
     <>
@@ -76,13 +93,41 @@ export const SideNav: React.FC<Props> = ({ className }) => {
             </nav>
           </div>
           <div className='flex flex-col flex-shrink-0 bg-gptdarkgray p-3 border-t border-white/20 justify-center space-y-1'>
-            <button
-              onClick={clearConversations}
+            <div
+              onClick={handleClickClearConversations}
               className='flex items-center gap-3 px-3 py-3 text-sm text-white transition-colors duration-200 rounded-md cursor-pointer hover:bg-gray-500/10'
             >
               <TrashIcon />
-              Clear all conversations
-            </button>
+              <span className='flex flex-grow'>
+                {showConfirmationsIcons
+                  ? 'Are you sure?'
+                  : 'Clear all conversations'}
+              </span>
+              {showConfirmationsIcons && (
+                <div className='flex gap-4'>
+                  <button
+                    onClick={(event) => {
+                      event.preventDefault()
+                      event.stopPropagation()
+                      clearConversations()
+                    }}
+                    className='text-gray-500 hover:text-white transiton-all'
+                  >
+                    <CheckIcon />
+                  </button>
+                  <button
+                    className='text-gray-500 hover:text-white transiton-all'
+                    onClick={(e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      setShowConfirmationsIcons(false)
+                    }}
+                  >
+                    <CloseIcon />
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </aside>

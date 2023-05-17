@@ -9,7 +9,7 @@ import { useEffect, useRef, useState } from 'react'
 import { MemoizedMessage } from './MemoizedMessage'
 
 export function Chat() {
-  const conversationMessages = useStore((state) => state.selectedMessages)
+  // const conversationMessages = useStore((state) => state.selectedMessages)
 
   const setSelectedConversation = useStore(
     (state) => state.setSelectedConversation
@@ -47,10 +47,10 @@ export function Chat() {
   const chatContainerRef = useRef<HTMLDivElement>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
 
-  // useEffect(() => {
-  //   // 👇️ scroll to bottom every time messages change
-  //   chatContainerRef.current?.scrollIntoView({ behavior: 'smooth' })
-  // }, [conversationMessages])
+  useEffect(() => {
+    // 👇️ scroll to bottom every time messages change
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [filteredMessages])
 
   const [animationParent] = useAutoAnimate()
 
@@ -71,7 +71,10 @@ export function Chat() {
             setIndexMessageSiblingSelected={setIndexMessageSiblingSelected}
           />
         ))}
-        <div className='flex-shrink-0 w-full h-32 md:h-48 bg-gptgray' />
+        <div
+          ref={bottomRef}
+          className='flex-shrink-0 w-full h-32 md:h-48 bg-gptgray'
+        />
       </div>
     </div>
   )

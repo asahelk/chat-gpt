@@ -4,6 +4,7 @@ import { useStore } from '@/store/boundStore'
 import { ConversationWithId } from '@/type'
 import { useParams, useRouter } from 'next/navigation'
 
+import Link from 'next/link'
 import { MessageFavIcon, StarIcon } from './Icons'
 
 interface Props {
@@ -68,18 +69,17 @@ export const Conversation: React.FC<Props> = ({
     event.preventDefault()
 
     if (params?.id !== conversation.id) {
-      console.log('handleClickConversation')
       // setSelectedConversation({ id: null })
       push(`chat/${conversation.id}`)
     }
   }
 
   return (
-    <div
-      // href={`/chat/${conversation.id}`}
-      onClick={handleClickConversation}
+    <Link
+      href={`/chat/${conversation.id}`}
+      // onClick={handleClickConversation}
       {...inputProps}
-      // prefetch={false}
+      prefetch={false}
       draggable={false}
       // onClick={() => selectConversation({ id: conversation.id })}
       className={`${background} focus-within:bg-gptCharcoalGray relative flex items-center gap-3 pl-3 py-3 break-all cursor-pointer group hover:bg-gptMidnightBlue min-h-[50px]`}
@@ -105,6 +105,6 @@ export const Conversation: React.FC<Props> = ({
       </button>
       {ElementTitle()}
       {RenderButtonsActions()}
-    </div>
+    </Link>
   )
 }
