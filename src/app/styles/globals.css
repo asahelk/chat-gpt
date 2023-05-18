@@ -144,3 +144,39 @@ code {
   border-left: 1px solid #ffffff33;
 }
 
+
+
+.openai-dialog {
+  width: 90vw;
+  max-width: 20rem;
+  
+  padding: 1em;
+  
+  background: #fff;
+  color: #656e77;
+  box-shadow: 0 0 5px rgba(101, 110, 119, .2);
+  border: 0;
+  text-align: center;
+  margin: 0 auto;
+}
+
+.openai-dialog[open] {
+  animation: .2s linear slidein;
+}
+
+.openai-dialog::backdrop {
+  background: rgba(52,53,65,.9);
+  animation: .4s ease fade;
+}
+
+.dialog__title {
+  color: #50AAFF;
+}
+
+.dialog__txt {}
+
+.dialog__btn {
+  display: block;
+  width: 100%;
+  margin-top: 2rem;
+}

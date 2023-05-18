@@ -2,7 +2,6 @@
 
 import { useStore } from '@/store/boundStore'
 import { useEffect, useState } from 'react'
-import { PencilIcon } from './Icons'
 import { MenuIconButton } from './MenuIconButton'
 
 interface Props {}
@@ -57,11 +56,7 @@ export const Header: React.FC<Props> = () => {
           <div className='font-semibold truncate w-full text-center text-black dark:text-white max-w-2xl'>
             {title ?? 'New Chat'}
           </div>
-          {!!messagesQuantity && (
-            <button className='text-gray-500 hover:text-white transiton-all'>
-              <PencilIcon />
-            </button>
-          )}
+          {/* {!!messagesQuantity && <EditTitleDialog />} */}
         </div>
 
         <div className='text-xs text-gray-400 w-full truncate text-center px-16 space-x-1'>
