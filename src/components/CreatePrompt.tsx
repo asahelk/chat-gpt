@@ -1,10 +1,12 @@
 'use client'
 
 import { SendIcon } from '@/components/Icons'
+import { NEW_CONVERSATION_PARAM } from '@/constants'
 import { useStore } from '@/store/boundStore'
 import { autoHeightOnTyping } from '@/utils/helper'
 import { useParams, useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
+import { RegenerateResponseButton } from './RegenerateResponseButton'
 
 const loadingStates = [
   [true, false, false],
@@ -43,10 +45,11 @@ export function ChatForm() {
   const sendPrompt = useStore((state) => state.sendPrompt)
   const isLoading = useStore((state) => state.loading)
   const textAreaRef = useRef<HTMLTextAreaElement>(null)
-  const [inputText, setInputText] = useState<string>()
+  const [inputText, setInputText] = useState<string>('')
   const selectedConversationId = useStore(
     (state) => state.selectedConversationId
   )
+
   const { push } = useRouter()
 
   const handleSubmit = async (event?: React.FormEvent<HTMLFormElement>) => {
@@ -60,7 +63,8 @@ export function ChatForm() {
 
     sendPrompt({ prompt: value.trim() })
 
-    if (idParam !== selectedConversationId) push(`/chat/newConversation`)
+    if (idParam !== selectedConversationId)
+      push(`/chat/${NEW_CONVERSATION_PARAM}`)
 
     element.value = ''
     setInputText('')
@@ -90,11 +94,17 @@ export function ChatForm() {
   }, [])
 
   return (
-    <section className='absolute bottom-0 left-0 w-full border-transparent bg-gradient-to-b from-transparent via-white to-white pt-6 dark:border-white/20 dark:via-[#343541] dark:to-[#343541] md:pt-16'>
+    <section className='absolute bottom-0 left-0 w-full border-transparent bg-gradient-to-b from-transparent via-white to-white pt-6 dark:border-white/20 dark:via-[#343541] dark:to-[#343541] md:pt-2'>
+      <div className='h-full flex ml-1 md:w-full md:m-auto gap-0 md:gap-2 justify-center'>
+        {!isLoading && selectedConversationId && (
+          <RegenerateResponseButton prompt={inputText} />
+        )}
+      </div>
+
       <form
         onSubmit={handleSubmit}
         onKeyDown={handleKeyDown}
-        className='flex flex-row max-w-3xl pt-6 m-auto mb-2'
+        className='flex flex-row max-w-3xl md:pt-6 m-auto mb-2'
       >
         <div className='relative flex flex-col flex-grow w-full px-4 py-3 text-white border rounded-md shadow-lg bg-gptlightgray border-gray-900/50'>
           <textarea
@@ -105,7 +115,6 @@ export function ChatForm() {
             tabIndex={0}
             autoFocus
             defaultValue=''
-            value={inputText}
             className='w-full h-[24px] max-h-60 resize-none bg-transparent m-0 border-0 outline-none'
           />
 

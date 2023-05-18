@@ -52,6 +52,7 @@ export const useStore = create<StoreState>()(
           Object.entries(state).filter(
             ([key]) =>
               ![
+                'stopConversation',
                 'lastMessage',
                 'selectedConversationId',
                 'selectedConversation',

@@ -210,7 +210,7 @@ export function useChatComponent<T>({
         />
 
         <div
-          className={`${className} absolute inset-y-0 right-0 w-8 z-10 bg-gradient-to-l group-focus-within:from-gptCharcoalGray from-gptdarkgray group-hover:from-gptMidnightBlue`}
+          className={`${className} absolute inset-y-0 right-0 w-8 z-10 bg-gradient-to-l group-focus-within:from-gptCharcoalGray  group-hover:from-gptMidnightBlue`}
           data-gradient='true'
         />
       </div>

@@ -16,6 +16,8 @@ export interface ConversationState {
   selectedConversationId?: Id | null
   selectedMessages: Message[] | []
   lastMessage?: Message | null
+  stopConversation: boolean
+  setStopConversation: ({ value }: { value: boolean }) => void
   removeConversation: ({ id }: { id: Id }) => void
   setLastMessage: ({ message }: { message?: Message | null }) => void
   addNewConversation: (conversation: Conversation) => void
@@ -36,6 +38,7 @@ export interface ConversationState {
     message?: Message
   }) => Promise<Id>
   removeContiguousMessages: ({ id, index }: { id: Id; index: number }) => void
+  regenerateLastResponse: () => void
 }
 
 export const createConversationSlice: StateCreator<
@@ -50,6 +53,10 @@ export const createConversationSlice: StateCreator<
   selectedConversation: null,
   selectedMessages: [],
   lastMessage: undefined,
+  stopConversation: false,
+  setStopConversation: ({ value }) => {
+    set((state) => ({ stopConversation: value }))
+  },
   setLastMessage: ({ message }) => {
     set((state) => ({ lastMessage: message }))
   },
@@ -62,6 +69,15 @@ export const createConversationSlice: StateCreator<
       selectedConversationId: conversation ? id : null,
       selectedConversation: conversation
     }))
+  },
+  regenerateLastResponse: () => {
+    const lastUserMessageIndex = get().selectedMessages.length - 2
+
+    const lastUserMessage = get().selectedMessages[lastUserMessageIndex]
+
+    if (lastUserMessage) {
+      get().sendPrompt({ prompt: '', message: lastUserMessage })
+    }
   },
   setSelectedMessages: ({ messages }: { messages: Message[] }) => {
     set((state) => ({ selectedMessages: [...messages] }))
@@ -287,32 +303,6 @@ export const createConversationSlice: StateCreator<
       }
     ]
 
-    if (isEditedMessage) {
-      // const messagesSiblings = selectedConversation.filter( //Could just by reference get and update messages in a forEach || or use indexes
-      const messagesSiblings = get().selectedMessages.filter(
-        (e) => e.parentId === message.parentId
-      )
-
-      const siblingsIds = messagesSiblings.flatMap((e) => e.id)
-      siblingsIds.push(userMessageID)
-
-      selectedConversation.messages = selectedConversation.messages.map(
-        (entry) => {
-          if (siblingsIds.includes(entry.id)) {
-            return { ...entry, siblingsInclusive: siblingsIds }
-          }
-          return entry
-        }
-      )
-      // messagesSiblings.forEach((e) => (e.siblingsInclusive = siblingsIds)) //update by reference
-
-      partialNewConversationMessages[0] = {
-        ...message,
-        id: userMessageID,
-        siblingsInclusive: siblingsIds
-      }
-    }
-
     let fullChatMessages = partialNewConversationMessages
 
     if (!selectedConversation) {
@@ -336,11 +326,36 @@ export const createConversationSlice: StateCreator<
       set((state) => ({
         loading: true,
         selectedConversation,
-        selectedMessages: partialNewConversationMessages,
+        selectedMessages: [...partialNewConversationMessages],
         selectedConversationId: uuID,
         conversationsList: [...state.conversationsList, newConversation]
       }))
     } else {
+      if (isEditedMessage) {
+        // const messagesSiblings = selectedConversation.filter( //Could just by reference get and update messages in a forEach || or use indexes
+        const messagesSiblings = get().selectedMessages.filter(
+          (e) => e.parentId === message.parentId
+        )
+
+        const siblingsIds = messagesSiblings.flatMap((e) => e.id)
+        siblingsIds.push(userMessageID)
+
+        selectedConversation.messages = selectedConversation.messages.map(
+          (entry) => {
+            if (siblingsIds.includes(entry.id)) {
+              return { ...entry, siblingsInclusive: siblingsIds }
+            }
+            return entry
+          }
+        )
+        // messagesSiblings.forEach((e) => (e.siblingsInclusive = siblingsIds)) //update by reference
+
+        partialNewConversationMessages[0] = {
+          ...message,
+          id: userMessageID,
+          siblingsInclusive: siblingsIds
+        }
+      }
       const oldLastMessage = get().lastMessage
 
       if (!isEditedMessage && oldLastMessage)
@@ -368,10 +383,12 @@ export const createConversationSlice: StateCreator<
     //   return selectedConversation.id
     // }
 
+    const abortController = new AbortController()
     const response = await fetch('/api/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messages: fullChatMessages })
+      body: JSON.stringify({ messages: fullChatMessages }),
+      signal: abortController.signal
     })
 
     if (!response.ok) {
@@ -415,6 +432,25 @@ export const createConversationSlice: StateCreator<
     let text = ''
 
     while (!done) {
+      if (get().stopConversation === true) {
+        abortController.abort()
+        newLastMessage.isFinished = true
+        done = true
+        set((state) => {
+          state.conversationsList[selectedConversationIndex] =
+            structuredClone(selectedConversation)
+
+          return {
+            loading: false,
+            selectedConversation: structuredClone(selectedConversation),
+            selectedMessages: [...state.selectedMessages],
+            selectedConversationId: selectedConversation.id,
+            conversationsList: [...state.conversationsList]
+          }
+        })
+        break
+      }
+
       const { value, done: readerDone } = await reader.read()
 
       if (readerDone) {

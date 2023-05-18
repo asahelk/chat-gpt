@@ -1,6 +1,7 @@
 import { useStore } from '@/store/boundStore'
 import { defaultFolderInit } from '@/utils/initObjects'
 import { MultiBackend, getBackendOptions } from '@minoru/react-dnd-treeview'
+import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { DndProvider } from 'react-dnd'
 import { ConversationList } from './ConversationList'
@@ -22,6 +23,8 @@ interface Props {
 export const SideNav: React.FC<Props> = ({ className }) => {
   const addNewFolder = useStore((state) => state.addNewFolder)
 
+  const { replace } = useRouter()
+
   const clearConversations = useStore((state) => state.clearConversations)
   const isShowNavOpen = useStore((state) => state.isShowNavOpen)
 
@@ -41,6 +44,16 @@ export const SideNav: React.FC<Props> = ({ className }) => {
         setShowConfirmationsIcons(false)
       }, 5000)
     }
+  }
+
+  function handleConfirmClearConversation(
+    event: React.MouseEvent<HTMLButtonElement>
+  ) {
+    event.preventDefault()
+    event.stopPropagation()
+    clearConversations()
+    replace('/chat')
+    setShowConfirmationsIcons(false)
   }
 
   return (
@@ -106,11 +119,7 @@ export const SideNav: React.FC<Props> = ({ className }) => {
               {showConfirmationsIcons && (
                 <div className='flex gap-4'>
                   <button
-                    onClick={(event) => {
-                      event.preventDefault()
-                      event.stopPropagation()
-                      clearConversations()
-                    }}
+                    onClick={handleConfirmClearConversation}
                     className='text-gray-500 hover:text-white transiton-all'
                   >
                     <CheckIcon />

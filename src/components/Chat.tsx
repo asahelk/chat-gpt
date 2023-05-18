@@ -1,6 +1,7 @@
 'use client'
 
 import { useChatMessage } from '@/app/hooks/useChatMessage'
+import { NEW_CONVERSATION_PARAM } from '@/constants'
 import { useStore } from '@/store/boundStore'
 import { Id } from '@/type'
 import { useAutoAnimate } from '@formkit/auto-animate/react'
@@ -27,7 +28,7 @@ export function Chat() {
   const params = useParams()
 
   useEffect(() => {
-    if (params?.id) {
+    if (params?.id && params?.id !== NEW_CONVERSATION_PARAM) {
       setSelectedConversation({ id: params?.id as Id })
     }
   }, [])

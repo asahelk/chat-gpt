@@ -34,7 +34,7 @@ export const Conversation: React.FC<Props> = ({
     background = '',
     bggradient = selectedConversationId === conversation.id
       ? 'from-gptCharcoalGray'
-      : ''
+      : 'from-gptdarkgray'
   } = inputProps
 
   const handleRemoveConversation = () => {
