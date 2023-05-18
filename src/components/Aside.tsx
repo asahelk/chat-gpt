@@ -1,23 +1,32 @@
 'use client'
 
 import { useStore } from '@/store/boundStore'
+import { useEffect, useState } from 'react'
 import { CloseIcon } from './Icons'
 import { SideNav } from './SideNav'
 
 interface Props {}
 
 export const Aside: React.FC<Props> = () => {
+  const [isHydrated, setIsHydrated] = useState(false)
+
   const setIsShowNavOpen = useStore((state) => state.setIsShowNavOpen)
   const isShowNavOpen = useStore((state) => state.isShowNavOpen)
+
+  useEffect(() => {
+    setIsHydrated(true)
+  }, [])
 
   const handleToggle = () => {
     setIsShowNavOpen({ value: !isShowNavOpen })
   }
 
-  const buttonClassName = !isShowNavOpen ? '!opacity-0 pointer-events-none' : ''
-  const wrapClassName = !isShowNavOpen
+  let buttonClassName = !isShowNavOpen ? '!opacity-0 pointer-events-none' : ''
+  let wrapClassName = !isShowNavOpen
     ? '-translate-x-full hidden'
     : 'fixed lg:relative'
+
+  if (!isHydrated) return <></>
 
   return (
     <>

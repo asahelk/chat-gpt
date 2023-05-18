@@ -271,7 +271,7 @@ export const Message: React.FC<Props> = ({
     const indexSelected = siblingsInclusive.findIndex((e) => e === id)
 
     return siblingsInclusive.length > 1 ? (
-      <div className='text-xs flex items-center justify-center gap-1 absolute left-0 top-2 -ml-4 -translate-x-full group-hover:visible visible'>
+      <div className='text-xs flex items-center justify-center gap-1 mt-4 lg:mt-0 lg:absolute lg:left-0 lg:top-2 lg:-ml-4 lg:-translate-x-full group-hover:visible visible'>
         <button
           disabled={indexSelected === 0}
           onClick={() =>
@@ -308,7 +308,7 @@ export const Message: React.FC<Props> = ({
       }`}
     >
       <article className='flex max-w-3xl gap-4 p-6 m-auto '>
-        <div className='flex-shrink-0 flex flex-col relative items-end'>
+        <div className='flex-shrink-0 flex flex-col relative items-center lg:min-w-0 min-w-[54px]'>
           <Avatar>{avatar}</Avatar>
           {renderFractionalNumbers()}
         </div>
