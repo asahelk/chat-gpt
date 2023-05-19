@@ -145,7 +145,7 @@ li ul {
 }
 
 .openai-dialog {
-  @apply bg-gptCharcoalGray rounded-lg p-9 pt-7 py-10 text-gray-200 w-full;
+  @apply bg-gptCharcoalGray rounded-lg p-9 pt-7 py-10 text-gray-200 w-full absolute;
   max-width: 392px;
 
   box-shadow: 0 0 5px rgba(101, 110, 119, 0.2);
@@ -155,25 +155,7 @@ li ul {
   left: 50%;
   transform: translate(-50%, -50%) !important;
 }
-
-.openai-dialog[open] {
-  animation: 0.2s linear slidein;
-}
-
 .openai-dialog::backdrop {
   background: rgba(52, 53, 65, 0.9);
   animation: 0.4s ease fade;
-}
-
-.dialog__title {
-  color: #50aaff;
-}
-
-.dialog__txt {
-}
-
-.dialog__btn {
-  display: block;
-  width: 100%;
-  margin-top: 2rem;
 }

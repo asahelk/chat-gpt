@@ -3,7 +3,8 @@
 import { useStore } from '@/store/boundStore'
 import { useAutoAnimate } from '@formkit/auto-animate/react'
 import { useEffect } from 'react'
-import { GitHubIcon, ReactIcon, SunIcon, TwitchIcon } from './Icons'
+import { KeyIcon, ReactIcon, SunIcon } from './Icons'
+import { useRouter } from 'next/navigation'
 
 const EXAMPLES = [
   '¿Cómo iterar un array en JavaScript?',
@@ -15,6 +16,8 @@ export function Welcome() {
   const setSelectedConversation = useStore(
     (state) => state.setSelectedConversation
   )
+
+  const { push } = useRouter()
   const setSelectedMessages = useStore((state) => state.setSelectedMessages)
 
   const setLastMessage = useStore((state) => state.setLastMessage)
@@ -45,18 +48,9 @@ export function Welcome() {
         </p>
 
         <div className='flex max-w-xl m-auto gap-x-2'>
-          <a
-            className='flex items-center justify-center w-[250px] p-2 font-bold text-white bg-purple-700 rounded-full gap-x-2 hover:bg-purple-500 focus:border-purple-800 active:bg-purple-800 transition'
-            href='https://twitch.tv/midudev'
-          >
-            <TwitchIcon className='w-6 h-6' /> Sígueme en Twitch
-          </a>
-          <a
-            className='flex items-center justify-center w-[250px] p-2 font-bold text-white bg-black rounded-full gap-x-2 hover:bg-black/50 '
-            href='https://twitch.tv/midudev'
-          >
-            <GitHubIcon className='w-6 h-6' /> Ver código en GitHub
-          </a>
+          <button className='flex items-center justify-center w-[250px] p-4 font-bold text-white bg-gptJungleGreen rounded-full gap-x-4 hover:bg-gptlogo/90 '>
+            <KeyIcon className='w-6 h-6' /> Enter your API Key
+          </button>
         </div>
 
         <h3 className='flex items-center justify-center mt-8 mb-2 text-lg gap-x-2'>
@@ -68,8 +62,11 @@ export function Welcome() {
           {EXAMPLES.map((example, index) => (
             <button
               key={index}
-              onClick={() => sendPrompt({ prompt: example })}
-              className='w-full p-3 rounded-md bg-gray-50 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-gray-900'
+              onClick={() => {
+                sendPrompt({ prompt: example })
+                push('/chat/newConversation')
+              }}
+              className='w-full p-3 rounded-md bg-gray-50 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-gptMidnightBlue'
             >
               {example} →
             </button>
