@@ -60,12 +60,12 @@ export async function POST(request: Request) {
   ] as ChatGPTMessage[]
 
   const payload: OpenAIStreamPayload = {
-    model: 'gpt-3.5-turbo',
+    model: 'gpt-3.5-turbo-0301',
     messages: formattedMessages,
     temperature: process.env.AI_TEMP ? parseFloat(process.env.AI_TEMP) : 0.5,
-    max_tokens: process.env.AI_MAX_TOKENS
-      ? parseInt(process.env.AI_MAX_TOKENS)
-      : 100,
+    // max_tokens: process.env.AI_MAX_TOKENS
+    //   ? parseInt(process.env.AI_MAX_TOKENS)
+    //   : 100,
     top_p: 1,
     frequency_penalty: 0,
     presence_penalty: 0,

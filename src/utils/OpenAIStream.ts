@@ -14,7 +14,7 @@ export interface OpenAIStreamPayload {
   top_p: number
   frequency_penalty: number
   presence_penalty: number
-  max_tokens: number
+  // max_tokens: number
   stream: boolean
   stop?: string[]
   user?: string
@@ -44,6 +44,7 @@ export async function OpenAIStream(payload: OpenAIStreamPayload) {
     })
 
     if (!response.ok || !response.body) {
+      console.log('Error en OpenAI API', response)
       console.error(response.statusText)
       return NextResponse.json({ error: 'OpenAI API error' }, { status: 500 })
     }
